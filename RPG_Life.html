@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>城市之水：RPG觉醒手册</title>
+    <style>
+        :root {
+            --primary: #00f2ff;
+            --secondary: #7000ff;
+            --bg: #0a0b1e;
+            --card-bg: #161b33;
+            --text: #e0e0e0;
+            --gold: #ffd700;
+            --success: #39ff14;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--primary);
+            width: 100%;
+            max-width: 500px;
+            padding-bottom: 10px;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #333;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        .section-title {
+            color: var(--gold);
+            font-size: 1.1rem;
+            margin: 20px 0 10px;
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .task-card {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 500px;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-sizing: border-box;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .task-info { flex: 1; }
+        .task-name { font-weight: bold; font-size: 1rem; margin-bottom: 4px;}
+        .task-desc { font-size: 0.8rem; color: #aaa; }
+        .task-pts { color: var(--success); font-weight: bold; margin-left: 10px; font-size: 0.9rem;}
+
+        input[type="checkbox"] {
+            width: 25px;
+            height: 25px;
+            accent-color: var(--primary);
+        }
+
+        .btn-submit {
+            background: linear-gradient(45deg, var(--secondary), var(--primary));
+            border: none;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-top: 30px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(112, 0, 255, 0.4);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .reward-tier {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .progress-bar-bg {
+            background: #222;
+            height: 10px;
+            border-radius: 5px;
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        .progress-fill {
+            background: var(--primary);
+            height: 100%;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.5s;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2 style="margin:0; color:var(--primary)">城市之水：觉醒手册</h2>
+        <div style="font-size: 0.8rem; color: #888;">PLAYER: DOCTOR. DRAINAGE</div>
+    </div>
+
+    <div class="stats-container">
+        <div class="stat-card">
+            <div style="font-size: 0.8rem;">累计积分 (XP)</div>
+            <div id="totalXP" class="stat-value">0</div>
+        </div>
+        <div class="stat-card">
+            <div style="font-size: 0.8rem;">连续全勤 (Days)</div>
+            <div id="streak" class="stat-value">0</div>
+        </div>
+        <div class="stat-card">
+            <div style="font-size: 0.8rem;">复活币 (Life)</div>
+            <div id="coins" class="stat-value" style="color:var(--gold)">0</div>
+        </div>
+        <div class="stat-card">
+            <div style="font-size: 0.8rem;">今日评价</div>
+            <div id="todayStatus" style="font-size: 0.9rem; margin-top:5px; color:var(--success)">等待开机</div>
+        </div>
+    </div>
+
+    <div class="section-title"><span>⚔️ 核心学术副本</span> <small>需全选才计全勤</small></div>
+    <div id="core-tasks">
+        </div>
+
+    <div class="section-title"><span>🛠️ 自我提升副本</span> <small>满3项计全勤</small></div>
+    <div id="side-tasks">
+        </div>
+
+    <button class="btn-submit" onclick="submitDay()">结束今日副本 & 结算积分</button>
+
+    <div class="reward-tier">
+        🏆 下一奖励：<span id="nextReward">加载中...</span>
+        <div class="progress-bar-bg"><div id="progressFill" class="progress-fill"></div></div>
+    </div>
+
+    <script>
+        // 游戏数据配置
+        const coreTaskData = [
+            { id: 'sci', name: 'SCI 论文撰写', desc: '时长≥2h 或 章节更新', pts: 30 },
+            { id: 'cfd', name: '数值模拟分析', desc: '1组数据绘图+结论', pts: 20 },
+            { id: 'patent', name: '专利撰写', desc: '1项权利要求或实验数据', pts: 10 }
+        ];
+
+        const sideTaskData = [
+            { id: 'stairs', name: '纵向位移', desc: '爬楼梯≥20层', pts: 10 },
+            { id: 'core', name: '核心加固', desc: '平板支撑/端腹', pts: 10 },
+            { id: 'read', name: '灵感捕手', desc: '阅读30min+随笔', pts: 6 },
+            { id: 'color', name: '视界重构', desc: '色彩构图学习', pts: 6 },
+            { id: 'talk', name: '共鸣共振', desc: '深度沟通/即兴演讲', pts: 8 }
+        ];
+
+        // 初始化存档
+        let gameState = JSON.parse(localStorage.getItem('phd_rpg_state')) || {
+            totalXP: 0,
+            streak: 0,
+            coins: 0,
+            lastDate: null
+        };
+
+        function saveGame() {
+            localStorage.setItem('phd_rpg_state', JSON.stringify(gameState));
+            updateUI();
+        }
+
+        function updateUI() {
+            document.getElementById('totalXP').innerText = gameState.totalXP;
+            document.getElementById('streak').innerText = gameState.streak;
+            document.getElementById('coins').innerText = gameState.coins;
+            
+            // 奖励系统简单逻辑
+            let nextR = "中级美食 (1200 XP)";
+            let progress = (gameState.totalXP / 1200) * 100;
+            if (gameState.totalXP < 560) { nextR = "冰激凌 (560 XP)"; progress = (gameState.totalXP / 560) * 100; }
+            else if (gameState.totalXP >= 1200) { nextR = "心仪手办 (2400 XP)"; progress = (gameState.totalXP / 2400) * 100; }
+            
+            document.getElementById('nextReward').innerText = nextR;
+            document.getElementById('progressFill').style.width = Math.min(progress, 100) + '%';
+        }
+
+        // 生成任务列表
+        function renderTasks() {
+            const coreContainer = document.getElementById('core-tasks');
+            coreTaskData.forEach(t => {
+                coreContainer.innerHTML += `
+                    <div class="task-card">
+                        <div class="task-info">
+                            <div class="task-name">${t.name}</div>
+                            <div class="task-desc">${t.desc}</div>
+                        </div>
+                        <div class="task-pts">+${t.pts}</div>
+                        <input type="checkbox" class="core-check" data-pts="${t.pts}">
+                    </div>
+                `;
+            });
+
+            const sideContainer = document.getElementById('side-tasks');
+            sideTaskData.forEach(t => {
+                sideContainer.innerHTML += `
+                    <div class="task-card" style="border-left-color: var(--primary)">
+                        <div class="task-info">
+                            <div class="task-name">${t.name}</div>
+                            <div class="task-desc">${t.desc}</div>
+                        </div>
+                        <div class="task-pts">+${t.pts}</div>
+                        <input type="checkbox" class="side-check" data-pts="${t.pts}">
+                    </div>
+                `;
+            });
+        }
+
+        // 提交结算
+        function submitDay() {
+            const today = new Date().toDateString();
+            if (gameState.lastDate === today) {
+                alert("今日副本已结算，请明天再来！");
+                return;
+            }
+
+            let dailyXP = 0;
+            let coreAllDone = true;
+            let sideDoneCount = 0;
+
+            document.querySelectorAll('.core-check').forEach(cb => {
+                if(cb.checked) dailyXP += parseInt(cb.getAttribute('data-pts'));
+                else coreAllDone = false;
+            });
+
+            document.querySelectorAll('.side-check').forEach(cb => {
+                if(cb.checked) {
+                    dailyXP += parseInt(cb.getAttribute('data-pts'));
+                    sideDoneCount++;
+                }
+            });
+
+            // 判定全勤逻辑
+            if (coreAllDone && sideDoneCount >= 3 && dailyXP >= 80) {
+                gameState.streak++;
+                gameState.totalXP += dailyXP;
+                // 复活币逻辑
+                if (gameState.streak % 7 === 0) {
+                    gameState.coins++;
+                    alert("【系统奖励】连续7天全勤，获得复活币 x1！");
+                }
+                document.getElementById('todayStatus').innerText = "达成全勤！";
+            } else {
+                if (gameState.coins > 0) {
+                    if (confirm("未达全勤，是否消耗 1 枚复活币保住连续天数？")) {
+                        gameState.coins--;
+                        gameState.totalXP += dailyXP;
+                    } else {
+                        gameState.streak = 0;
+                    }
+                } else {
+                    alert("核心任务未完或积分不足，全勤中断。");
+                    gameState.streak = 0;
+                    gameState.totalXP += dailyXP;
+                }
+                document.getElementById('todayStatus').innerText = "已结算(未全勤)";
+                document.getElementById('todayStatus').style.color = "red";
+            }
+
+            gameState.lastDate = today;
+            saveGame();
+            alert(`结算成功！今日获得积分: ${dailyXP}`);
+        }
+
+        renderTasks();
+        updateUI();
+    </script>
+</body>
+</html>

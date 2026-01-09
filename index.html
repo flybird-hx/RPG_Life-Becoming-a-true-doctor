@@ -35,7 +35,7 @@
             height: 100vh;
             width: 100vw;
             display: flex;
-            overflow: hidden; /* 防止 iPad 橡皮筋回弹 */
+            overflow: hidden;
         }
 
         .main-container {
@@ -45,90 +45,109 @@
             padding: 20px;
             box-sizing: border-box;
             gap: 25px;
-            /* 适配 iPad/iPhone 动态刘海和底栏 */
-            padding-top: calc(env(safe-area-inset-top) + 10px);
-            padding-bottom: calc(env(safe-area-inset-bottom) + 10px);
+            padding-top: calc(env(safe-area-inset-top) + 15px);
+            padding-bottom: calc(env(safe-area-inset-bottom) + 15px);
         }
 
-        /* 侧边栏：iPad 横屏常驻 */
+        /* 侧边栏：现在的核心状态中心 */
         .sidebar {
-            flex: 0 0 300px;
+            flex: 0 0 320px;
             background: var(--sidebar-bg);
-            border-radius: 20px;
+            border-radius: 24px;
             padding: 25px;
             border: 2px solid var(--secondary);
-            box-shadow: 0 0 20px rgba(112, 0, 255, 0.2);
+            box-shadow: 0 0 25px rgba(112, 0, 255, 0.25);
             display: flex;
             flex-direction: column;
             overflow-y: auto;
         }
 
-        /* 任务区：确保在 iPad 上有足够空间滚动 */
+        /* 右侧任务大厅 */
         .content {
             flex: 1;
             overflow-y: auto;
+            padding-right: 10px;
             display: flex;
             flex-direction: column;
-            padding-right: 10px;
         }
 
-        /* 移动端/竖屏适配 */
-        @media (max-width: 850px), (orientation: portrait) {
+        @media (max-width: 900px), (orientation: portrait) {
             body { overflow-y: auto; height: auto; }
             .main-container { flex-direction: column; height: auto; overflow: visible; }
-            .sidebar { flex: none; width: 100%; position: relative; top: 0; }
+            .sidebar { flex: none; width: 100%; position: relative; }
             .content { overflow-y: visible; }
         }
 
+        /* 角色信息样式 */
         .avatar-img {
             width: 130px; height: 130px; border-radius: 50%;
             border: 4px solid var(--primary);
             box-shadow: 0 0 15px var(--primary);
             object-fit: cover; display: block; margin: 0 auto;
         }
-
-        .player-name { font-size: 1.4rem; font-weight: bold; text-align: center; margin-top: 15px; color: var(--primary); }
+        .player-name { font-size: 1.4rem; font-weight: bold; text-align: center; margin-top: 15px; color: var(--primary); letter-spacing: 1px; }
         .player-title { font-size: 0.85rem; text-align: center; color: #888; margin-top: 5px; }
-
         .level-badge {
             background: linear-gradient(45deg, var(--secondary), var(--primary));
             color: white; padding: 6px 18px; border-radius: 20px;
-            font-weight: bold; display: block; margin: 15px auto 0; text-align: center;
-            width: fit-content;
+            font-weight: bold; display: block; margin: 12px auto; text-align: center;
+            width: fit-content; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 25px; }
-        .stat-box { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; text-align: center; }
-        .stat-label { font-size: 0.7rem; color: #aaa; }
-        .stat-value { font-size: 1.2rem; font-weight: bold; }
+        /* 核心成就栏（左移后的样式） */
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .ach-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .ach-label { font-size: 0.75rem; color: #888; }
+        .ach-val { font-size: 1.1rem; font-weight: bold; color: var(--primary); }
 
-        .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
-        .dash-card { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #333;}
-        .dash-val { font-size: 1.3rem; font-weight: bold; color: var(--primary); }
+        /* 属性网格 */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
+        .stat-box { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 12px; text-align: center; border: 1px solid #222; }
+        .stat-label { font-size: 0.65rem; color: #888; text-transform: uppercase; }
+        .stat-value { font-size: 1.1rem; font-weight: bold; margin-top: 2px; }
 
-        .section-title { color: var(--gold); font-size: 1.1rem; margin: 25px 0 15px; border-left: 4px solid var(--gold); padding-left: 10px; }
-        
+        /* 任务卡片样式 */
+        .section-title { color: var(--gold); font-size: 1.1rem; margin: 20px 0 15px; border-left: 4px solid var(--gold); padding-left: 10px; display: flex; align-items: center; justify-content: space-between;}
         .task-card {
-            background: var(--card-bg); border-radius: 15px; padding: 18px;
+            background: var(--card-bg); border-radius: 16px; padding: 18px;
             margin-bottom: 12px; display: flex; align-items: center;
             border-left: 5px solid var(--secondary);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
         .task-info { flex: 1; }
-        .task-name { font-weight: bold; font-size: 1.1rem; }
+        .task-name { font-weight: bold; font-size: 1.05rem; }
         .task-desc { font-size: 0.85rem; color: #aaa; margin-top: 4px; }
-        .task-pts { color: var(--success); font-weight: bold; margin: 0 20px; font-size: 1rem; }
-
-        input[type="checkbox"] { width: 28px; height: 28px; cursor: pointer; }
+        .task-pts { color: var(--success); font-weight: bold; margin: 0 15px; font-size: 1rem; }
+        input[type="checkbox"] { width: 28px; height: 28px; cursor: pointer; accent-color: var(--primary); }
 
         .btn-submit {
             background: linear-gradient(45deg, var(--secondary), var(--primary));
-            border: none; color: white; padding: 22px; border-radius: 15px;
-            font-size: 1.2rem; font-weight: bold; margin: 20px 0; cursor: pointer;
-            box-shadow: 0 0 25px rgba(112, 0, 255, 0.4);
+            border: none; color: white; padding: 22px; border-radius: 16px;
+            font-size: 1.25rem; font-weight: bold; margin: 20px 0; cursor: pointer;
+            box-shadow: 0 10px 25px rgba(112, 0, 255, 0.4);
+            transition: transform 0.2s;
         }
+        .btn-submit:active { transform: scale(0.98); }
 
-        .backup-zone { margin-top: auto; padding-top: 20px; border-top: 1px solid #333; display: flex; gap: 10px; }
-        .btn-small { flex: 1; background: #222; border: 1px solid #444; color: #aaa; padding: 10px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; }
+        .backup-zone { margin-top: auto; padding-top: 20px; display: flex; gap: 10px; }
+        .btn-small { flex: 1; background: #1a1a1a; border: 1px solid #333; color: #777; padding: 10px; border-radius: 10px; font-size: 0.7rem; cursor: pointer; }
+        
+        /* 针对 iPad 滚动条美化 */
+        .content::-webkit-scrollbar { width: 6px; }
+        .content::-webkit-scrollbar-thumb { background: var(--secondary); border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -142,11 +161,17 @@
             <div class="level-badge" id="playerLevel">LV.1 见习学者</div>
         </div>
         
+        <div class="achievement-grid">
+            <div class="ach-card"><span class="ach-label">累计 XP</span><span id="totalXP" class="ach-val">0</span></div>
+            <div class="ach-card"><span class="ach-label">连续全勤</span><span id="streak" class="ach-val">0</span></div>
+            <div class="ach-card"><span class="ach-label">复活币</span><span id="coins" class="ach-val" style="color:var(--gold)">0</span></div>
+        </div>
+
         <div class="stats-grid">
-            <div class="stat-box"><div class="stat-label">智力 (INT)</div><div class="stat-value" id="statINT" style="color:var(--int-color)">10</div></div>
-            <div class="stat-box"><div class="stat-label">体质 (CON)</div><div class="stat-value" id="statCON" style="color:var(--con-color)">10</div></div>
-            <div class="stat-box"><div class="stat-label">感知 (PER)</div><div class="stat-value" id="statPER" style="color:var(--per-color)">10</div></div>
-            <div class="stat-box"><div class="stat-label">魅力 (CHA)</div><div class="stat-value" id="statCHA" style="color:var(--cha-color)">10</div></div>
+            <div class="stat-box"><div class="stat-label">智力 INT</div><div class="stat-value" id="statINT" style="color:var(--int-color)">10</div></div>
+            <div class="stat-box"><div class="stat-label">体质 CON</div><div class="stat-value" id="statCON" style="color:var(--con-color)">10</div></div>
+            <div class="stat-box"><div class="stat-label">感知 PER</div><div class="stat-value" id="statPER" style="color:var(--per-color)">10</div></div>
+            <div class="stat-box"><div class="stat-label">魅力 CHA</div><div class="stat-value" id="statCHA" style="color:var(--cha-color)">10</div></div>
         </div>
 
         <div class="backup-zone">
@@ -156,20 +181,25 @@
     </aside>
 
     <main class="content">
-        <div class="dashboard-grid">
-            <div class="dash-card"><div style="font-size:0.7rem; color:#888;">累计 XP</div><div id="totalXP" class="dash-val">0</div></div>
-            <div class="dash-card"><div style="font-size:0.7rem; color:#888;">连续全勤</div><div id="streak" class="dash-val">0</div></div>
-            <div class="dash-card"><div style="font-size:0.7rem; color:#888;">复活币</div><div id="coins" class="dash-val" style="color:var(--gold)">0</div></div>
-        </div>
-        <div id="todayStatus" style="text-align: center; color: #888; margin-bottom: 10px; font-size: 0.9rem;"></div>
+        <div id="todayStatus" style="text-align: right; color: #666; font-size: 0.85rem; margin-bottom: 5px;">状态：系统已连接</div>
 
-        <div class="section-title">⚔️ 核心学术副本</div>
+        <div class="section-title">
+            <span>⚔️ 核心学术副本</span>
+            <span style="font-size: 0.7rem; color: #555; font-weight: normal;">需全选计全勤</span>
+        </div>
         <div id="core-tasks"></div>
 
-        <div class="section-title">🛠️ 自我提升副本</div>
+        <div class="section-title">
+            <span>🛠️ 自我提升副本</span>
+            <span style="font-size: 0.7rem; color: #555; font-weight: normal;">满3项计全勤</span>
+        </div>
         <div id="side-tasks"></div>
 
         <button class="btn-submit" id="submitBtn" onclick="submitDay()">⚡ 提交今日战果</button>
+        
+        <div style="text-align: center; color: #444; font-size: 0.7rem; margin-top: 10px;">
+            数据仅保存在 iPad 本地浏览器缓存中
+        </div>
     </main>
 </div>
 
@@ -194,7 +224,6 @@
         renderTasks();
         refreshUI();
         
-        // 监控切换回 App 的动作
         document.addEventListener("visibilitychange", () => {
             if (document.visibilityState === 'visible') refreshUI();
         });
@@ -255,7 +284,7 @@
             state.xp += dailyXP;
             state.streak++;
             if(state.streak % 7 === 0) { state.coins++; alert("✨ 触发连胜神迹！获得复活币 x1"); }
-            alert(`结算成功！本日增加经验: ${dailyXP}`);
+            alert(`结算成功！连胜记录：${state.streak} 天`);
         } else {
             if(state.coins > 0 && confirm("⚠️ 未达全勤！是否消耗复活币保住连胜？")) {
                 state.coins--; state.xp += dailyXP;
@@ -271,7 +300,7 @@
 
     function exportSave() {
         const dataStr = btoa(JSON.stringify(state));
-        navigator.clipboard.writeText(dataStr).then(() => alert("存档代码已复制到剪贴板！"));
+        navigator.clipboard.writeText(dataStr).then(() => alert("存档已复制！请保存到备忘录。"));
     }
 
     function importSave() {
@@ -284,11 +313,10 @@
                     localStorage.setItem('drainage_rpg_v32', JSON.stringify(state));
                     location.reload();
                 }
-            } catch (e) { alert("存档解析失败！"); }
+            } catch (e) { alert("解析失败！"); }
         }
     }
 
-    // 确保 DOM 加载后立即执行
     window.onload = init;
 </script>
 </body>

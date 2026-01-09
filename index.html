@@ -2,12 +2,14 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Role-playing game：Become a Doctor of Civil Engineering</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>RPG：Become a Doctor of Civil Engineering</title>
+    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="RPG:Become a Doctor of Civil Engineering">
+    <meta name="apple-mobile-web-app-title" content="HuXiao RPG">
     <link rel="apple-touch-icon" href="https://api.dicebear.com/7.x/pixel-art/svg?seed=DrainageDoctor">
+
     <style>
         :root {
             --primary: #00f2ff;
@@ -27,108 +29,113 @@
         body {
             background-color: var(--bg);
             color: var(--text);
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
             display: flex;
             justify-content: center;
-            min-height: 100vh;
+            overflow: hidden; /* 防止 iPad 全屏模式下出现橡皮筋回弹 */
         }
 
         .main-container {
             display: flex;
             width: 100%;
-            max-width: 1000px;
-            gap: 25px;
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            gap: 20px;
+            padding-top: env(safe-area-inset-top); /* 适配 iPad 状态栏 */
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
+        /* 侧边栏：在 iPad 横屏下固定宽度 */
         .sidebar {
-            flex: 1;
-            min-width: 280px;
+            flex: 0 0 300px;
             background: var(--sidebar-bg);
-            border-radius: 16px;
-            padding: 20px;
+            border-radius: 20px;
+            padding: 25px;
             border: 2px solid var(--secondary);
             box-shadow: 0 0 20px rgba(112, 0, 255, 0.2);
-            height: fit-content;
-            position: sticky;
-            top: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
         }
 
-        .content { flex: 2; }
-
-        @media (max-width: 768px) {
-            .main-container { flex-direction: column; }
-            .sidebar { position: relative; top: 0; width: 100%; box-sizing: border-box; }
+        /* 任务区：支持独立滚动 */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 5px;
+            mask-image: linear-gradient(to bottom, black 95%, transparent 100%);
         }
 
-        .avatar-container { text-align: center; margin-bottom: 20px; }
+        /* 隐藏滚动条但保留功能 */
+        .content::-webkit-scrollbar { width: 5px; }
+        .content::-webkit-scrollbar-thumb { background: var(--secondary); border-radius: 10px; }
+
+        /* 响应式调整：手机或竖屏模式 */
+        @media (max-width: 800px), (orientation: portrait) {
+            body { overflow-y: auto; height: auto; }
+            .main-container { flex-direction: column; height: auto; }
+            .sidebar { flex: none; width: 100%; box-sizing: border-box; position: relative; top: 0; }
+            .content { overflow-y: visible; }
+        }
+
+        .avatar-container { text-align: center; margin-bottom: 15px; }
         .avatar-img {
-            width: 120px; height: 120px; border-radius: 50%;
+            width: 130px; height: 130px; border-radius: 50%;
             border: 4px solid var(--primary);
             box-shadow: 0 0 15px var(--primary);
             object-fit: cover;
             background: #222;
         }
 
-        .player-name { font-size: 1.2rem; font-weight: bold; margin-top: 10px; color: var(--primary); }
-        .player-title { font-size: 0.9rem; color: #888; }
+        .player-name { font-size: 1.3rem; font-weight: bold; margin-top: 10px; color: var(--primary); }
+        .player-title { font-size: 0.85rem; color: #888; margin-top: 5px;}
         
         .level-badge {
             background: linear-gradient(45deg, var(--secondary), var(--primary));
-            color: white; padding: 5px 15px; border-radius: 20px;
+            color: white; padding: 6px 18px; border-radius: 20px;
             font-weight: bold; display: inline-block; margin-top: 10px;
+            box-shadow: 0 0 10px rgba(0,242,255,0.3);
         }
 
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
-        .stat-box { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; text-align: center; position: relative; }
-        .stat-label { font-size: 0.7rem; color: #aaa; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+        .stat-box { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; text-align: center; }
+        .stat-label { font-size: 0.7rem; color: #aaa; margin-bottom: 3px;}
         .stat-value { font-size: 1.2rem; font-weight: bold; }
 
-        /* 存档按钮样式 */
-        .backup-zone {
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid #333;
-            display: flex;
-            gap: 10px;
-        }
-        .btn-small {
-            flex: 1;
-            background: #222;
-            border: 1px solid #444;
-            color: #aaa;
-            padding: 8px;
-            border-radius: 6px;
-            font-size: 0.7rem;
-            cursor: pointer;
-        }
-        .btn-small:hover { background: #333; color: #fff; }
+        .backup-zone { margin-top: auto; padding-top: 15px; border-top: 1px solid #333; display: flex; gap: 8px; }
+        .btn-small { flex: 1; background: #222; border: 1px solid #444; color: #aaa; padding: 10px; border-radius: 8px; font-size: 0.7rem; cursor: pointer; }
 
-        .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .dash-card { background: var(--card-bg); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid #333;}
-        .dash-val { font-size: 1.2rem; font-weight: bold; color: var(--primary); }
-        .dash-lbl { font-size: 0.7rem; color: #888; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+        .dash-card { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #333;}
+        .dash-val { font-size: 1.3rem; font-weight: bold; color: var(--primary); }
+        .dash-lbl { font-size: 0.75rem; color: #888; }
 
         .section-title { color: var(--gold); font-size: 1.1rem; margin: 25px 0 15px; border-left: 4px solid var(--gold); padding-left: 10px; }
         
         .task-card {
-            background: var(--card-bg); border-radius: 12px; padding: 15px;
+            background: var(--card-bg); border-radius: 15px; padding: 18px;
             margin-bottom: 12px; display: flex; align-items: center;
-            border-left: 4px solid var(--secondary);
+            border-left: 5px solid var(--secondary);
+            transition: transform 0.2s;
         }
+        .task-card:hover { transform: scale(1.01); }
         .task-info { flex: 1; }
-        .task-name { font-weight: bold; font-size: 1rem; }
-        .task-desc { font-size: 0.8rem; color: #aaa; }
-        .task-pts { color: var(--success); font-weight: bold; margin: 0 15px; font-size: 0.9rem; }
+        .task-name { font-weight: bold; font-size: 1.05rem; }
+        .task-desc { font-size: 0.85rem; color: #aaa; margin-top: 3px; }
+        .task-pts { color: var(--success); font-weight: bold; margin: 0 20px; font-size: 1rem; }
 
-        input[type="checkbox"] { width: 22px; height: 22px; cursor: pointer; }
+        input[type="checkbox"] { width: 26px; height: 26px; cursor: pointer; border-radius: 6px; }
 
         .btn-submit {
             background: linear-gradient(45deg, var(--secondary), var(--primary));
-            border: none; color: white; padding: 15px; border-radius: 12px;
-            font-size: 1.1rem; font-weight: bold; margin-top: 20px; cursor: pointer;
-            width: 100%; box-shadow: 0 0 20px rgba(112, 0, 255, 0.4);
+            border: none; color: white; padding: 20px; border-radius: 15px;
+            font-size: 1.2rem; font-weight: bold; margin: 20px 0; cursor: pointer;
+            width: 100%; box-shadow: 0 0 25px rgba(112, 0, 255, 0.4);
         }
     </style>
 </head>
@@ -154,7 +161,6 @@
             <button class="btn-small" onclick="exportSave()">💾 导出备份</button>
             <button class="btn-small" onclick="importSave()">📂 导入存档</button>
         </div>
-        <div style="font-size: 0.6rem; color: #555; margin-top: 10px; text-align: center;">建议每周备份一次，发送到微信</div>
     </aside>
 
     <main class="content">
@@ -163,7 +169,7 @@
             <div class="dash-card"><div class="dash-lbl">连胜 Days</div><div id="streak" class="dash-val">0</div></div>
             <div class="dash-card"><div class="dash-lbl">复活币</div><div id="coins" class="dash-val">0</div></div>
         </div>
-        <div id="todayStatus" style="text-align: center; color: #888; margin-bottom: 15px;">等待副本开启...</div>
+        <div id="todayStatus" style="text-align: center; color: #888; margin-bottom: 15px;">等待指令...</div>
 
         <div class="section-title">⚔️ 核心学术副本</div>
         <div id="core-tasks"></div>
@@ -190,118 +196,5 @@
         { id: 'talk', name: '共鸣共振', desc: '即兴演讲或深度社交', pts: 8 }
     ];
 
-    let state = JSON.parse(localStorage.getItem('drainage_rpg_v32')) || { xp: 0, streak: 0, coins: 0, lastDate: "" };
-
-    function init() {
-        renderTasks();
-        refreshUI();
-    
-        document.addEventListener("visibilitychange", function() {
-            if (document.visibilityState === 'visible') {
-                refreshUI(); 
-            }
-        });
-    }
-  
-    function renderTasks() {
-        document.getElementById('core-tasks').innerHTML = coreTasks.map(t => `
-            <div class="task-card">
-                <div class="task-info"><div class="task-name">${t.name}</div><div class="task-desc">${t.desc}</div></div>
-                <div class="task-pts">+${t.pts}</div>
-                <input type="checkbox" class="c-check" data-pts="${t.pts}">
-            </div>`).join('');
-
-        document.getElementById('side-tasks').innerHTML = sideTasks.map(t => `
-            <div class="task-card" style="border-left-color:var(--primary)">
-                <div class="task-info"><div class="task-name">${t.name}</div><div class="task-desc">${t.desc}</div></div>
-                <div class="task-pts">+${t.pts}</div>
-                <input type="checkbox" class="s-check" data-pts="${t.pts}">
-            </div>`).join('');
-    }
-
-    function refreshUI() {
-        document.getElementById('totalXP').innerText = state.xp;
-        document.getElementById('streak').innerText = state.streak;
-        document.getElementById('coins').innerText = state.coins;
-
-        const level = Math.floor(state.xp / 600) + 1;
-        const baseStat = 10 + (level - 1) * 5;
-        const streakBuff = Math.floor(state.streak / 7) * 3;
-
-        const titles = ["见习学者", "研究助理", "特聘研究员", "正高级专家", "水务领军者"];
-        document.getElementById('playerLevel').innerText = `LV.${level} ${titles[Math.min(level-1, 4)]}`;
-
-        ['INT', 'CON', 'PER', 'CHA'].forEach(s => {
-            document.getElementById(`stat${s}`).innerText = baseStat + streakBuff;
-        });
-
-        if (state.lastDate === new Date().toDateString()) {
-            document.getElementById('todayStatus').innerText = "✅ 今日副本已完美封存";
-            document.querySelector('.btn-submit').disabled = true;
-            document.querySelector('.btn-submit').style.opacity = "0.5";
-        }
-    }
-
-    function submitDay() {
-        let dailyXP = 0;
-        let coreDone = true;
-        let sideCount = 0;
-
-        document.querySelectorAll('.c-check').forEach(i => { if(i.checked) dailyXP += parseInt(i.dataset.pts); else coreDone = false; });
-        document.querySelectorAll('.s-check').forEach(i => { if(i.checked) { dailyXP += parseInt(i.dataset.pts); sideCount++; } });
-
-        if (coreDone && sideCount >= 3) {
-            state.xp += dailyXP;
-            state.streak++;
-            if(state.streak % 7 === 0) { state.coins++; alert("✨ 触发连胜神迹！获得复活币 x1"); }
-            alert(`结算成功！本日增加经验: ${dailyXP}`);
-        } else {
-            if(state.coins > 0 && confirm("⚠️ 未达全勤！是否消耗复活币保住连胜？")) {
-                state.coins--; state.xp += dailyXP;
-            } else {
-                state.streak = 0; state.xp += dailyXP;
-                alert("连胜中断。不要气馁，明天继续！");
-            }
-        }
-        state.lastDate = new Date().toDateString();
-        localStorage.setItem('drainage_rpg_v32', JSON.stringify(state));
-        location.reload();
-    }
-
-    // --- 存档功能 ---
-    function exportSave() {
-        const dataStr = btoa(JSON.stringify(state)); // 简单Base64编码
-        const tempInput = document.createElement("input");
-        document.body.appendChild(tempInput);
-        tempInput.value = dataStr;
-        tempInput.select();
-        document.execCommand("copy");
-        document.body.removeChild(tempInput);
-        alert("存档代码已复制到剪贴板！\n请立即发送到微信或笔记中保存。\n\n代码预览: " + dataStr.substring(0, 15) + "...");
-    }
-
-    function importSave() {
-        const code = prompt("请粘贴你的存档代码：");
-        if (code) {
-            try {
-                const decoded = JSON.parse(atob(code));
-                if (decoded.xp !== undefined) {
-                    state = decoded;
-                    localStorage.setItem('drainage_rpg_v32', JSON.stringify(state));
-                    alert("🧙‍♂️ 降维打击成功！记忆已恢复。");
-                    location.reload();
-                }
-            } catch (e) {
-                alert("存档解析失败，请确保代码完整。");
-            }
-        }
-    }
-
-    init();
-</script>
-</body>
-</html>
-
-
-
-
+    // 保持你原有的存储键名，确保数据不丢失
+    let state = JSON.parse(localStorage.getItem('drainage_rpg_v32')) || { xp: 0

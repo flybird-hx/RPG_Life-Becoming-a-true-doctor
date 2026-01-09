@@ -3,37 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>城市之水：RPG觉醒手册 v3.0</title>
+    <title>城市之水：RPG觉醒手册 v3.1</title>
     <style>
         :root {
-            --primary: #00f2ff; /* 科技蓝 */
-            --secondary: #7000ff; /* 深紫 */
-            --bg: #0a0b1e; /* 深空黑背景 */
-            --card-bg: #161b33; /* 卡片背景 */
-            --sidebar-bg: #11152b; /* 侧边栏背景 */
+            --primary: #00f2ff;
+            --secondary: #7000ff;
+            --bg: #0a0b1e;
+            --card-bg: #161b33;
+            --sidebar-bg: #11152b;
             --text: #e0e0e0;
             --gold: #ffd700;
             --success: #39ff14;
-            --danger: #ff3860;
-            --int-color: #3498db; /* 智力蓝 */
-            --con-color: #e74c3c; /* 体质红 */
-            --per-color: #2ecc71; /* 感知绿 */
-            --cha-color: #9b59b6; /* 魅力紫 */
+            --int-color: #3498db;
+            --con-color: #e74c3c;
+            --per-color: #2ecc71;
+            --cha-color: #9b59b6;
         }
 
         body {
             background-color: var(--bg);
             color: var(--text);
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', system-ui, sans-serif;
             margin: 0;
             padding: 20px;
             display: flex;
             justify-content: center;
             min-height: 100vh;
-            box-sizing: border-box;
         }
 
-        /* 主容器：控制左右布局 */
         .main-container {
             display: flex;
             width: 100%;
@@ -41,7 +38,6 @@
             gap: 25px;
         }
 
-        /* 左侧角色面板 */
         .sidebar {
             flex: 1;
             min-width: 280px;
@@ -55,44 +51,20 @@
             top: 20px;
         }
 
-        /* 右侧任务面板 */
-        .content {
-            flex: 2;
-        }
+        .content { flex: 2; }
 
-        /* 手机端适配：改为上下布局 */
         @media (max-width: 768px) {
-            .main-container {
-                flex-direction: column;
-            }
-            .sidebar {
-                position: relative;
-                top: 0;
-                width: 100%;
-                min-width: auto;
-                box-sizing: border-box;
-            }
-             body { padding: 10px; }
+            .main-container { flex-direction: column; }
+            .sidebar { position: relative; top: 0; width: 100%; box-sizing: border-box; }
         }
 
-        /* --- 角色面板样式 --- */
-        .avatar-container {
-            text-align: center;
-            margin-bottom: 20px;
-            position: relative;
-        }
-        
-        /* 头像图片：你可以替换 src 链接 */
+        .avatar-container { text-align: center; margin-bottom: 20px; }
         .avatar-img {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
+            width: 120px; height: 120px; border-radius: 50%;
             border: 4px solid var(--primary);
             box-shadow: 0 0 15px var(--primary);
             object-fit: cover;
-            /* 这里使用了一个占位图，你可以换成你自己的 */
-            background-image: url('https://img.freepik.com/free-vector/mysterious-mafia-man-smoking-cigarette_52683-34828.jpg?w=740&t=st=1708675000~exp=1708675600~hmac=6413937628388750265605483215420403434343434343434343434343434343');
-            background-size: cover;
+            background: #222;
         }
 
         .player-name { font-size: 1.2rem; font-weight: bold; margin-top: 10px; color: var(--primary); }
@@ -100,70 +72,41 @@
         
         .level-badge {
             background: linear-gradient(45deg, var(--secondary), var(--primary));
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            display: inline-block;
-            margin-top: 10px;
-            box-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+            color: white; padding: 5px 15px; border-radius: 20px;
+            font-weight: bold; display: inline-block; margin-top: 10px;
         }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 25px;
-        }
-
-        .stat-box {
-            background: rgba(255,255,255,0.05);
-            padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-            position: relative;
-        }
-        .stat-label { font-size: 0.8rem; color: #aaa; margin-bottom: 5px;}
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px; }
+        .stat-box { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; text-align: center; position: relative; }
+        .stat-label { font-size: 0.8rem; color: #aaa; }
         .stat-value { font-size: 1.4rem; font-weight: bold; }
-        .stat-bonus { font-size: 0.8rem; color: var(--success); position: absolute; top: 5px; right: 5px; }
+        .stat-bonus { font-size: 0.7rem; color: var(--success); position: absolute; top: 5px; right: 5px; }
 
-        /* --- 任务面板样式 (沿用之前的，稍作调整) --- */
-        .header { border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 20px; }
-        .section-title { color: var(--gold); font-size: 1.1rem; margin: 25px 0 15px; display: flex; justify-content: space-between; align-items: center;}
-        
-        .task-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-left: 4px solid var(--secondary);
-            transition: transform 0.2s;
-        }
-        .task-card:hover { transform: translateY(-2px); background: #1a203d;}
-        .task-info { flex: 1; }
-        .task-name { font-weight: bold; font-size: 1rem; margin-bottom: 4px;}
-        .task-desc { font-size: 0.8rem; color: #aaa; }
-        .task-pts { color: var(--success); font-weight: bold; margin-left: 15px; font-size: 0.9rem; white-space: nowrap;}
-        input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--primary); cursor: pointer; margin-left: 15px;}
-
-        .btn-submit {
-            background: linear-gradient(45deg, var(--secondary), var(--primary));
-            border: none; color: white; padding: 15px; border-radius: 12px;
-            font-size: 1.1rem; font-weight: bold; margin-top: 30px; cursor: pointer;
-            box-shadow: 0 0 20px rgba(112, 0, 255, 0.4); width: 100%; transition: scale 0.2s;
-        }
-        .btn-submit:active { transform: scale(0.98); }
-
-        .dashboard-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;
-        }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
         .dash-card { background: var(--card-bg); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid #333;}
         .dash-val { font-size: 1.2rem; font-weight: bold; color: var(--primary); }
         .dash-lbl { font-size: 0.7rem; color: #888; }
 
+        .section-title { color: var(--gold); font-size: 1.1rem; margin: 25px 0 15px; border-left: 4px solid var(--gold); padding-left: 10px; }
+        
+        .task-card {
+            background: var(--card-bg); border-radius: 12px; padding: 15px;
+            margin-bottom: 12px; display: flex; align-items: center;
+            border-left: 4px solid var(--secondary);
+        }
+        .task-info { flex: 1; }
+        .task-name { font-weight: bold; font-size: 1rem; }
+        .task-desc { font-size: 0.8rem; color: #aaa; }
+        .task-pts { color: var(--success); font-weight: bold; margin: 0 15px; font-size: 0.9rem; }
+
+        input[type="checkbox"] { width: 22px; height: 22px; cursor: pointer; }
+
+        .btn-submit {
+            background: linear-gradient(45deg, var(--secondary), var(--primary));
+            border: none; color: white; padding: 15px; border-radius: 12px;
+            font-size: 1.1rem; font-weight: bold; margin-top: 20px; cursor: pointer;
+            width: 100%; box-shadow: 0 0 20px rgba(112, 0, 255, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -171,146 +114,135 @@
 <div class="main-container">
     <aside class="sidebar">
         <div class="avatar-container">
-            <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=DoctorDrainage" alt="Avatar" class="avatar-img">
-            <div class="player-name">Dr. Drainage</div>
+            <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=DrainageDoctor" alt="Avatar" class="avatar-img">
+            <div class="player-name">Dr. Drainage 排水医生</div>
             <div class="player-title">城市水系统守护者</div>
-            <div class="level-badge" id="playerLevel">LV.1 见习学者</div>
+            <div class="level-badge" id="playerLevel">LV.1 加载中...</div>
         </div>
-
         <div class="stats-grid">
-            <div class="stat-box" style="border-bottom: 3px solid var(--int-color);">
-                <div class="stat-label">智力 (INT)</div>
-                <div class="stat-value" style="color: var(--int-color);" id="statINT">10</div>
-                <div class="stat-bonus" id="bonusINT"></div>
-            </div>
-            <div class="stat-box" style="border-bottom: 3px solid var(--con-color);">
-                <div class="stat-label">体质 (CON)</div>
-                <div class="stat-value" style="color: var(--con-color);" id="statCON">10</div>
-                <div class="stat-bonus" id="bonusCON"></div>
-            </div>
-            <div class="stat-box" style="border-bottom: 3px solid var(--per-color);">
-                <div class="stat-label">感知 (PER)</div>
-                <div class="stat-value" style="color: var(--per-color);" id="statPER">10</div>
-                <div class="stat-bonus" id="bonusPER"></div>
-            </div>
-            <div class="stat-box" style="border-bottom: 3px solid var(--cha-color);">
-                <div class="stat-label">魅力 (CHA)</div>
-                <div class="stat-value" style="color: var(--cha-color);" id="statCHA">10</div>
-                <div class="stat-bonus" id="bonusCHA"></div>
-            </div>
-        </div>
-        
-        <div style="margin-top: 20px; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px; font-size: 0.8rem; color: #888;">
-            <span style="color: var(--success)">💡 成长机制：</span><br>
-            • 每 600 XP 提升 1 级，全属性增加。<br>
-            • 每连续全勤 7 天，激活全属性加成 Buff。
+            <div class="stat-box"><div class="stat-label">智力 (INT)</div><div class="stat-value" id="statINT">--</div><div class="stat-bonus" id="bonusINT"></div></div>
+            <div class="stat-box"><div class="stat-label">体质 (CON)</div><div class="stat-value" id="statCON">--</div><div class="stat-bonus" id="bonusCON"></div></div>
+            <div class="stat-box"><div class="stat-label">感知 (PER)</div><div class="stat-value" id="statPER">--</div><div class="stat-bonus" id="bonusPER"></div></div>
+            <div class="stat-box"><div class="stat-label">魅力 (CHA)</div><div class="stat-value" id="statCHA">--</div><div class="stat-bonus" id="bonusCHA"></div></div>
         </div>
     </aside>
 
     <main class="content">
-        <div class="header">
-            <h2 style="margin:0; color:var(--primary); display: flex; align-items: center;">
-                🕹️ 每日副本控制台
-            </h2>
-        </div>
-
         <div class="dashboard-grid">
-             <div class="dash-card">
-                <div class="dash-lbl">累计积分 (XP)</div>
-                <div id="totalXP" class="dash-val">0</div>
-            </div>
-            <div class="dash-card">
-                <div class="dash-lbl">连续全勤 (Days)</div>
-                <div id="streak" class="dash-val">0</div>
-            </div>
-             <div class="dash-card">
-                <div class="dash-lbl">复活币 (Life)</div>
-                <div id="coins" class="dash-val" style="color:var(--gold)">0</div>
-            </div>
+            <div class="dash-card"><div class="dash-lbl">累计 XP</div><div id="totalXP" class="dash-val">0</div></div>
+            <div class="dash-card"><div class="dash-lbl">连胜 Days</div><div id="streak" class="dash-val">0</div></div>
+            <div class="dash-card"><div class="dash-lbl">复活币</div><div id="coins" class="dash-val">0</div></div>
         </div>
-        <div id="todayStatus" style="text-align: center; font-size: 0.9rem; margin-bottom: 20px; color: #888;">
-            状态：等待已连接，准备执行任务...
-        </div>
+        <div id="todayStatus" style="text-align: center; color: #888; margin-bottom: 15px;">等待指令...</div>
 
+        <div class="section-title">⚔️ 核心学术副本</div>
+        <div id="core-tasks"></div>
 
-        <div class="section-title">
-            <span>⚔️ 核心学术副本 (智力主场)</span> 
-            <small style="font-weight: normal; color: #888; font-size: 0.8rem;">需全选才计全勤</small>
-        </div>
-        <div id="core-tasks">
-            </div>
+        <div class="section-title">🛠️ 自我提升副本</div>
+        <div id="side-tasks"></div>
 
-        <div class="section-title">
-            <span>🛠️ 自我提升副本 (综合能力)</span> 
-            <small style="font-weight: normal; color: #888; font-size: 0.8rem;">满3项计全勤</small>
-        </div>
-        <div id="side-tasks">
-             </div>
-
-        <button class="btn-submit" onclick="submitDay()">⚡ 结束今日副本 & 结算</button>
-        
-        <div style="margin-top: 25px; color: #666; font-size: 0.8rem; text-align: center;">
-            当前版本：v3.0 (Stats & Avatar Update)<br>
-            数据仅存储于本地浏览器
-        </div>
+        <button class="btn-submit" onclick="submitDay()">⚡ 提交今日战果</button>
     </main>
 </div>
 
 <script>
-    // ================= 配置区域 =================
-    // 等级头衔配置
-    const levelTitles = [
-        "见习学者", "初级研究员", "中级工程师", "高级专家", 
-        "资深博导", "学术泰斗", "传奇宗师", "水之半神"
-    ];
-    const XP_PER_LEVEL = 600; // 多少经验升一级
-
-    // 任务配置
-    const coreTaskData = [
-        { id: 'sci', name: 'SCI 论文攻坚', desc: '时长≥2h 或 章节更新', pts: 30 },
-        { id: 'cfd', name: '数值模拟分析', desc: '1组数据绘图+结论', pts: 20 },
-        { id: 'patent', name: '专利护城河', desc: '1项权利要求或实验数据', pts: 10 }
+    // --- 数据定义 ---
+    const coreTasks = [
+        { id: 'sci', name: 'SCI 论文攻坚', desc: '撰写≥2h 或 章节重大更新', pts: 30 },
+        { id: 'cfd', name: '数值模拟分析', desc: 'Fluent/VOF 数据处理或模型优化', pts: 20 },
+        { id: 'patent', name: '专利撰写', desc: '权利要求书或核心创新点细化', pts: 10 }
     ];
 
-    const sideTaskData = [
-        { id: 'stairs', name: '纵向位移 (体质)', desc: '爬楼梯≥20层', pts: 10 },
-        { id: 'core', name: '核心加固 (体质)', desc: '平板支撑/端腹', pts: 10 },
-        { id: 'read', name: '灵感捕手 (智力/感知)', desc: '阅读30min+随笔', pts: 6 },
-        { id: 'color', name: '视界重构 (感知)', desc: '色彩构图学习', pts: 6 },
-        { id: 'talk', name: '共鸣共振 (魅力)', desc: '深度沟通/即兴演讲', pts: 8 }
+    const sideTasks = [
+        { id: 'stairs', name: '纵向位移', desc: '爬楼梯≥20层 (CON+)', pts: 10 },
+        { id: 'core', name: '核心加固', desc: '平板支撑/端腹 (CON+)', pts: 10 },
+        { id: 'read', name: '灵感捕手', desc: '专业外书籍阅读+随笔 (PER+)', pts: 6 },
+        { id: 'color', name: '视界重构', desc: '构图/色彩学习与练习 (PER+)', pts: 6 },
+        { id: 'talk', name: '共鸣共振', desc: '即兴演讲或深度社交 (CHA+)', pts: 8 }
     ];
 
-    // ================= 核心逻辑引擎 =================
-    // 初始化存档
-    let gameState = JSON.parse(localStorage.getItem('phd_rpg_state_v3')) || {
-        totalXP: 0,
-        streak: 0,
-        coins: 0,
-        lastDate: null
-    };
+    // --- 引擎逻辑 ---
+    let state = JSON.parse(localStorage.getItem('drainage_rpg_v31')) || { xp: 0, streak: 0, coins: 0, lastDate: "" };
 
-    function saveGame() {
-        localStorage.setItem('phd_rpg_state_v3', JSON.stringify(gameState));
-        updateUI();
+    function init() {
+        try {
+            renderTasks();
+            refreshUI();
+        } catch (e) {
+            alert("脚本运行错误: " + e.message);
+        }
     }
 
-    // --- 核心：属性计算引擎 ---
-    function calculateStats() {
-        // 1. 计算等级
-        // 等级 = 总经验 / 升级经验 + 1 (确保最低是1级)
-        let level = Math.floor(gameState.totalXP / XP_PER_LEVEL) + 1;
-        let titleIndex = Math.min(level - 1, levelTitles.length - 1);
-        let currentTitle = levelTitles[titleIndex];
+    function renderTasks() {
+        const cBox = document.getElementById('core-tasks');
+        const sBox = document.getElementById('side-tasks');
+        
+        cBox.innerHTML = coreTasks.map(t => `
+            <div class="task-card">
+                <div class="task-info"><div class="task-name">${t.name}</div><div class="task-desc">${t.desc}</div></div>
+                <div class="task-pts">+${t.pts}</div>
+                <input type="checkbox" class="c-check" data-pts="${t.pts}">
+            </div>`).join('');
 
-        // 2. 计算基础属性 (随等级线性增长，初始10点，每级+5)
-        let baseStat = 10 + (level - 1) * 5;
+        sBox.innerHTML = sideTasks.map(t => `
+            <div class="task-card" style="border-left-color:var(--primary)">
+                <div class="task-info"><div class="task-name">${t.name}</div><div class="task-desc">${t.desc}</div></div>
+                <div class="task-pts">+${t.pts}</div>
+                <input type="checkbox" class="s-check" data-pts="${t.pts}">
+            </div>`).join('');
+    }
 
-        // 3. 计算全勤Buff加成 (每满7天全勤，全属性+3)
-        let streakBonus = Math.floor(gameState.streak / 7) * 3;
+    function refreshUI() {
+        document.getElementById('totalXP').innerText = state.xp;
+        document.getElementById('streak').innerText = state.streak;
+        document.getElementById('coins').innerText = state.coins;
 
-        return {
-            level: level,
-            title: currentTitle,
-            finalINT: baseStat + streakBonus,
-            finalCON: baseStat + streakBonus,
-            finalPER: baseStat +
+        const level = Math.floor(state.xp / 600) + 1;
+        const baseStat = 10 + (level - 1) * 5;
+        const streakBuff = Math.floor(state.streak / 7) * 3;
+
+        document.getElementById('playerLevel').innerText = `LV.${level} 研究专家`;
+        ['INT', 'CON', 'PER', 'CHA'].forEach(s => {
+            document.getElementById(`stat${s}`).innerText = baseStat + streakBuff;
+            document.getElementById(`bonus${s}`).innerText = streakBuff > 0 ? `+${streakBuff}` : "";
+        });
+
+        if (state.lastDate === new Date().toDateString()) {
+            document.getElementById('todayStatus').innerText = "✅ 今日任务已封存";
+            document.querySelector('.btn-submit').disabled = true;
+            document.querySelector('.btn-submit').style.opacity = "0.5";
+        }
+    }
+
+    function submitDay() {
+        let dailyXP = 0;
+        let coreDone = true;
+        let sideCount = 0;
+
+        document.querySelectorAll('.c-check').forEach(i => { if(i.checked) dailyXP += parseInt(i.dataset.pts); else coreDone = false; });
+        document.querySelectorAll('.s-check').forEach(i => { if(i.checked) { dailyXP += parseInt(i.dataset.pts); sideCount++; } });
+
+        if (coreDone && sideCount >= 3) {
+            state.xp += dailyXP;
+            state.streak++;
+            if(state.streak % 7 === 0) state.coins++;
+            alert(`恭喜！达成全勤！获得经验值: ${dailyXP}`);
+        } else {
+            if(state.coins > 0 && confirm("未达全勤！是否消耗1枚复活币保住连胜？")) {
+                state.coins--;
+                state.xp += dailyXP;
+            } else {
+                state.streak = 0;
+                state.xp += dailyXP;
+                alert("连胜中断，经验已累加。");
+            }
+        }
+        state.lastDate = new Date().toDateString();
+        localStorage.setItem('drainage_rpg_v31', JSON.stringify(state));
+        location.reload();
+    }
+
+    init();
+</script>
+</body>
+</html>

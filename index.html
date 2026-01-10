@@ -32,10 +32,13 @@
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             margin: 0;
             padding: 0;
-            height: 100vh;
+            /* 解决 Safari 高度 bug 的关键 */
+            height: 100svh;
             width: 100vw;
             display: flex;
             overflow: hidden;
+            /* 消除点击延迟 */
+            touch-action: manipulation;
         }
 
         .main-container {
@@ -45,11 +48,12 @@
             padding: 20px;
             box-sizing: border-box;
             gap: 25px;
+            /* 动态适配刘海和底栏 */
             padding-top: calc(env(safe-area-inset-top) + 15px);
             padding-bottom: calc(env(safe-area-inset-bottom) + 15px);
         }
 
-        /* 侧边栏：现在的核心状态中心 */
+        /* 侧边栏 */
         .sidebar {
             flex: 0 0 320px;
             background: var(--sidebar-bg);
@@ -60,15 +64,16 @@
             display: flex;
             flex-direction: column;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
-        /* 右侧任务大厅 */
         .content {
             flex: 1;
             overflow-y: auto;
             padding-right: 10px;
             display: flex;
             flex-direction: column;
+            -webkit-overflow-scrolling: touch;
         }
 
         @media (max-width: 900px), (orientation: portrait) {
@@ -78,7 +83,6 @@
             .content { overflow-y: visible; }
         }
 
-        /* 角色信息样式 */
         .avatar-img {
             width: 130px; height: 130px; border-radius: 50%;
             border: 4px solid var(--primary);
@@ -94,44 +98,23 @@
             width: fit-content; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        /* 核心成就栏（左移后的样式） */
-        .achievement-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 10px;
-            margin: 15px 0;
-        }
-        .ach-card {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid #333;
-            border-radius: 12px;
-            padding: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        .achievement-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin: 15px 0; }
+        .ach-card { background: rgba(255,255,255,0.03); border: 1px solid #333; border-radius: 12px; padding: 12px; display: flex; justify-content: space-between; align-items: center; }
         .ach-label { font-size: 0.75rem; color: #888; }
         .ach-val { font-size: 1.1rem; font-weight: bold; color: var(--primary); }
 
-        /* 属性网格 */
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
         .stat-box { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 12px; text-align: center; border: 1px solid #222; }
         .stat-label { font-size: 0.65rem; color: #888; text-transform: uppercase; }
         .stat-value { font-size: 1.1rem; font-weight: bold; margin-top: 2px; }
 
-        /* 任务卡片样式 */
         .section-title { color: var(--gold); font-size: 1.1rem; margin: 20px 0 15px; border-left: 4px solid var(--gold); padding-left: 10px; display: flex; align-items: center; justify-content: space-between;}
-        .task-card {
-            background: var(--card-bg); border-radius: 16px; padding: 18px;
-            margin-bottom: 12px; display: flex; align-items: center;
-            border-left: 5px solid var(--secondary);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
+        .task-card { background: var(--card-bg); border-radius: 16px; padding: 18px; margin-bottom: 12px; display: flex; align-items: center; border-left: 5px solid var(--secondary); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         .task-info { flex: 1; }
         .task-name { font-weight: bold; font-size: 1.05rem; }
         .task-desc { font-size: 0.85rem; color: #aaa; margin-top: 4px; }
         .task-pts { color: var(--success); font-weight: bold; margin: 0 15px; font-size: 1rem; }
-        input[type="checkbox"] { width: 28px; height: 28px; cursor: pointer; accent-color: var(--primary); }
+        input[type="checkbox"] { width: 32px; height: 32px; cursor: pointer; accent-color: var(--primary); }
 
         .btn-submit {
             background: linear-gradient(45deg, var(--secondary), var(--primary));
@@ -144,10 +127,6 @@
 
         .backup-zone { margin-top: auto; padding-top: 20px; display: flex; gap: 10px; }
         .btn-small { flex: 1; background: #1a1a1a; border: 1px solid #333; color: #777; padding: 10px; border-radius: 10px; font-size: 0.7rem; cursor: pointer; }
-        
-        /* 针对 iPad 滚动条美化 */
-        .content::-webkit-scrollbar { width: 6px; }
-        .content::-webkit-scrollbar-thumb { background: var(--secondary); border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -182,24 +161,9 @@
 
     <main class="content">
         <div id="todayStatus" style="text-align: right; color: #666; font-size: 0.85rem; margin-bottom: 5px;">状态：系统已连接</div>
-
-        <div class="section-title">
-            <span>⚔️ 核心学术副本</span>
-            <span style="font-size: 0.7rem; color: #555; font-weight: normal;">需全选计全勤</span>
-        </div>
         <div id="core-tasks"></div>
-
-        <div class="section-title">
-            <span>🛠️ 自我提升副本</span>
-            <span style="font-size: 0.7rem; color: #555; font-weight: normal;">满3项计全勤</span>
-        </div>
         <div id="side-tasks"></div>
-
         <button class="btn-submit" id="submitBtn" onclick="submitDay()">⚡ 提交今日战果</button>
-        
-        <div style="text-align: center; color: #444; font-size: 0.7rem; margin-top: 10px;">
-            数据仅保存在 iPad 本地浏览器缓存中
-        </div>
     </main>
 </div>
 
@@ -223,26 +187,18 @@
     function init() {
         renderTasks();
         refreshUI();
-        
-        document.addEventListener("visibilitychange", () => {
-            if (document.visibilityState === 'visible') refreshUI();
-        });
+        document.addEventListener("visibilitychange", () => { if (document.visibilityState === 'visible') refreshUI(); });
     }
 
     function renderTasks() {
-        const cContainer = document.getElementById('core-tasks');
-        const sContainer = document.getElementById('side-tasks');
-        
-        if (!cContainer || !sContainer) return;
-
-        cContainer.innerHTML = coreTasks.map(t => `
+        document.getElementById('core-tasks').innerHTML = '<div class="section-title"><span>⚔️ 核心学术副本</span></div>' + coreTasks.map(t => `
             <div class="task-card">
                 <div class="task-info"><div class="task-name">${t.name}</div><div class="task-desc">${t.desc}</div></div>
                 <div class="task-pts">+${t.pts}</div>
                 <input type="checkbox" class="c-check" data-pts="${t.pts}">
             </div>`).join('');
 
-        sContainer.innerHTML = sideTasks.map(t => `
+        document.getElementById('side-tasks').innerHTML = '<div class="section-title"><span>🛠️ 自我提升副本</span></div>' + sideTasks.map(t => `
             <div class="task-card" style="border-left-color:var(--primary)">
                 <div class="task-info"><div class="task-name">${t.name}</div><div class="task-desc">${t.desc}</div></div>
                 <div class="task-pts">+${t.pts}</div>
@@ -254,24 +210,16 @@
         document.getElementById('totalXP').innerText = state.xp;
         document.getElementById('streak').innerText = state.streak;
         document.getElementById('coins').innerText = state.coins;
-
         const level = Math.floor(state.xp / 600) + 1;
         const baseStat = 10 + (level - 1) * 5;
         const streakBuff = Math.floor(state.streak / 7) * 3;
-
         const titles = ["见习学者", "研究助理", "特聘研究员", "高级专家", "领航博导"];
         document.getElementById('playerLevel').innerText = `LV.${level} ${titles[Math.min(level-1, 4)]}`;
-
-        ['INT', 'CON', 'PER', 'CHA'].forEach(s => {
-            document.getElementById(`stat${s}`).innerText = baseStat + streakBuff;
-        });
-
+        ['INT', 'CON', 'PER', 'CHA'].forEach(s => { document.getElementById(`stat${s}`).innerText = baseStat + streakBuff; });
         if (state.lastDate === new Date().toDateString()) {
             document.getElementById('todayStatus').innerText = "✅ 今日副本已完美封存";
             const btn = document.getElementById('submitBtn');
-            btn.disabled = true;
-            btn.style.opacity = "0.5";
-            btn.innerText = "结算已完成";
+            btn.disabled = true; btn.style.opacity = "0.5"; btn.innerText = "结算已完成";
         }
     }
 
@@ -279,19 +227,13 @@
         let dailyXP = 0, coreDone = true, sideCount = 0;
         document.querySelectorAll('.c-check').forEach(i => { if(i.checked) dailyXP += parseInt(i.dataset.pts); else coreDone = false; });
         document.querySelectorAll('.s-check').forEach(i => { if(i.checked) { dailyXP += parseInt(i.dataset.pts); sideCount++; } });
-
         if (coreDone && sideCount >= 3) {
-            state.xp += dailyXP;
-            state.streak++;
-            if(state.streak % 7 === 0) { state.coins++; alert("✨ 触发连胜神迹！获得复活币 x1"); }
+            state.xp += dailyXP; state.streak++;
+            if(state.streak % 7 === 0) { state.coins++; alert("✨ 触发连胜神迹！复活币 +1"); }
             alert(`结算成功！连胜记录：${state.streak} 天`);
         } else {
-            if(state.coins > 0 && confirm("⚠️ 未达全勤！是否消耗复活币保住连胜？")) {
-                state.coins--; state.xp += dailyXP;
-            } else {
-                state.streak = 0; state.xp += dailyXP;
-                alert("连胜中断。不要气馁，明天继续！");
-            }
+            if(state.coins > 0 && confirm("⚠️ 未达全勤！是否消耗复活币保住连胜？")) { state.coins--; state.xp += dailyXP; }
+            else { state.streak = 0; state.xp += dailyXP; alert("连胜中断。"); }
         }
         state.lastDate = new Date().toDateString();
         localStorage.setItem('drainage_rpg_v32', JSON.stringify(state));
@@ -300,23 +242,18 @@
 
     function exportSave() {
         const dataStr = btoa(JSON.stringify(state));
-        navigator.clipboard.writeText(dataStr).then(() => alert("存档已复制！请保存到备忘录。"));
+        navigator.clipboard.writeText(dataStr).then(() => alert("存档已复制！"));
     }
 
     function importSave() {
-        const code = prompt("请粘贴存档代码：");
+        const code = prompt("粘贴存档代码：");
         if (code) {
             try {
                 const decoded = JSON.parse(atob(code));
-                if (decoded.xp !== undefined) {
-                    state = decoded;
-                    localStorage.setItem('drainage_rpg_v32', JSON.stringify(state));
-                    location.reload();
-                }
-            } catch (e) { alert("解析失败！"); }
+                if (decoded.xp !== undefined) { state = decoded; localStorage.setItem('drainage_rpg_v32', JSON.stringify(state)); location.reload(); }
+            } catch (e) { alert("失败！"); }
         }
     }
-
     window.onload = init;
 </script>
 </body>

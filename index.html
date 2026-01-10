@@ -79,6 +79,7 @@
         .task-desc { font-size: 1rem; color: #aaa; margin-top: 8px; }
         .task-pts-display { font-size: 1.3rem; font-weight: bold; color: var(--success); margin: 0 25px; min-width: 50px; text-align: right; }
         input[type="checkbox"] { width: 42px; height: 42px; cursor: pointer; accent-color: var(--primary); }
+        input[type="checkbox"]:disabled { cursor: not-allowed; opacity: 0.3; }
 
         .btn-submit { background: linear-gradient(45deg, var(--secondary), var(--primary)); border: none; color: white; padding: 28px; border-radius: 24px; font-size: 1.7rem; font-weight: bold; margin: 20px 0; cursor: pointer; box-shadow: 0 15px 35px rgba(112, 0, 255, 0.5); }
     </style>
@@ -166,6 +167,7 @@
         document.addEventListener("visibilitychange", () => { if (document.visibilityState === 'visible') { refreshUI(); updateCountdown(); } });
     }
 
+    // 逻辑升级点：增加锁定任务复选框的功能
     function refreshUI() {
         document.getElementById('totalXP').innerText = state.xp;
         document.getElementById('streak').innerText = state.streak;
@@ -179,8 +181,16 @@
             document.getElementById(`stat${s}`).innerText = 10 + (level-1)*5 + Math.floor(state.streak/7)*3; 
         });
         
+        // 如果今日已提交，锁定所有交互
         if (state.lastDate === new Date().toDateString()) {
-            const btn = document.getElementById('submitBtn'); btn.disabled = true; btn.style.opacity = "0.5"; btn.innerText = "结算已完成";
+            document.getElementById('todayStatus').innerText = "✅ 副本已完美封存";
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true; btn.style.opacity = "0.5"; btn.innerText = "今日结算已完成";
+            
+            // 锁定所有复选框 [核心修复点]
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.disabled = true;
+            });
         }
     }
 
@@ -228,7 +238,7 @@
                 state.coins--; state.xp += dailyXP; state.missedDays = 0; 
             } else { 
                 state.streak = 0; state.xp += dailyXP; state.missedDays = 0; 
-                alert("💔 连胜中断。"); 
+                alert("💔 连胜中断。不要气馁，休息一下再出发！"); 
             }
         }
         state.lastDate = new Date().toDateString();
@@ -238,17 +248,17 @@
 
     function exportSave() { 
         const str = btoa(unescape(encodeURIComponent(JSON.stringify(state))));
-        navigator.clipboard.writeText(str).then(() => alert("存档代码已复制！")); 
+        navigator.clipboard.writeText(str).then(() => alert("存档已克隆。")); 
     }
     
     function importSave() { 
-        const code = prompt("粘贴存档代码："); 
+        const code = prompt("接入存档代码："); 
         if (code) { 
             try { 
                 state = JSON.parse(decodeURIComponent(escape(atob(code)))); 
                 localStorage.setItem('drainage_rpg_v39', JSON.stringify(state)); 
                 location.reload(); 
-            } catch (e) { alert("解析失败！"); } 
+            } catch (e) { alert("失败。"); } 
         } 
     }
     

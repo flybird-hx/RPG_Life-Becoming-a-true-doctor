@@ -20,7 +20,7 @@
             --text: #e0e0e0;
             --gold: #ffd700;
             --success: #39ff14;
-            --warning: #ffcc00;
+            --warning: #ff4757; /* 更加鲜明的红色提醒 */
             --int-color: #3498db;
             --con-color: #e74c3c;
             --per-color: #2ecc71;
@@ -55,12 +55,13 @@
             flex: 0 0 320px;
             background: var(--sidebar-bg);
             border-radius: 24px;
-            padding: 25px;
+            padding: 20px;
             border: 2px solid var(--secondary);
             box-shadow: 0 0 25px rgba(112, 0, 255, 0.25);
             display: flex;
             flex-direction: column;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .content {
@@ -69,6 +70,7 @@
             padding-right: 10px;
             display: flex;
             flex-direction: column;
+            -webkit-overflow-scrolling: touch;
         }
 
         @media (max-width: 900px), (orientation: portrait) {
@@ -78,55 +80,62 @@
             .content { overflow-y: visible; }
         }
 
+        /* 角色信息样式 */
         .avatar-img {
-            width: 130px; height: 130px; border-radius: 50%;
+            width: 110px; height: 110px; border-radius: 50%;
             border: 4px solid var(--primary);
             box-shadow: 0 0 15px var(--primary);
             object-fit: cover; display: block; margin: 0 auto;
         }
-        .player-name { font-size: 1.4rem; font-weight: bold; text-align: center; margin-top: 15px; color: var(--primary); letter-spacing: 1px; }
-        .player-title { font-size: 0.85rem; text-align: center; color: #888; margin-top: 5px; }
+        .player-name { font-size: 1.3rem; font-weight: bold; text-align: center; margin-top: 10px; color: var(--primary); letter-spacing: 1px; }
+        .player-title { font-size: 0.8rem; text-align: center; color: #888; margin-top: 3px; }
         
+        /* 倒计时样式 */
+        .countdown-box {
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid var(--warning);
+            border-radius: 12px;
+            padding: 10px;
+            margin-top: 15px;
+            text-align: center;
+        }
+        .countdown-label { font-size: 0.7rem; color: var(--warning); text-transform: uppercase; font-weight: bold; }
+        .countdown-days { font-size: 1.5rem; font-weight: bold; color: #fff; text-shadow: 0 0 10px var(--warning); }
+
         .level-badge {
             background: linear-gradient(45deg, var(--secondary), var(--primary));
-            color: white; padding: 6px 18px; border-radius: 20px;
-            font-weight: bold; display: block; margin: 12px auto; text-align: center;
-            width: fit-content; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            color: white; padding: 5px 15px; border-radius: 20px;
+            font-weight: bold; display: block; margin: 10px auto; text-align: center;
+            width: fit-content; font-size: 0.9rem;
         }
 
-        /* 属性网格：置顶 */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; margin-bottom: 20px; }
-        .stat-box { background: rgba(0,0,0,0.2); padding: 12px; border-radius: 12px; text-align: center; border: 1px solid #222; }
-        .stat-label { font-size: 0.65rem; color: #888; text-transform: uppercase; }
-        .stat-value { font-size: 1.15rem; font-weight: bold; margin-top: 2px; }
+        /* 属性网格 */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+        .stat-box { background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; text-align: center; border: 1px solid #222; }
+        .stat-label { font-size: 0.6rem; color: #888; }
+        .stat-value { font-size: 1rem; font-weight: bold; }
 
         /* 核心成就栏 */
         .achievement-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 8px;
+            margin: 15px 0;
         }
         .ach-card {
             background: rgba(255,255,255,0.03);
             border: 1px solid #333;
-            border-radius: 12px;
-            padding: 12px;
+            border-radius: 10px;
+            padding: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .ach-label { font-size: 0.75rem; color: #888; }
-        .ach-val { font-size: 1.1rem; font-weight: bold; color: var(--primary); }
+        .ach-label { font-size: 0.7rem; color: #888; }
+        .ach-val { font-size: 1rem; font-weight: bold; color: var(--primary); }
 
         .section-title { color: var(--gold); font-size: 1.1rem; margin: 20px 0 15px; border-left: 4px solid var(--gold); padding-left: 10px; display: flex; align-items: center; justify-content: space-between;}
-        
-        .task-card {
-            background: var(--card-bg); border-radius: 16px; padding: 18px;
-            margin-bottom: 12px; display: flex; align-items: center;
-            border-left: 5px solid var(--secondary);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
+        .task-card { background: var(--card-bg); border-radius: 16px; padding: 18px; margin-bottom: 12px; display: flex; align-items: center; border-left: 5px solid var(--secondary); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         .task-info { flex: 1; }
         .task-name { font-weight: bold; font-size: 1.05rem; }
         .task-desc { font-size: 0.85rem; color: #aaa; margin-top: 4px; }
@@ -138,11 +147,9 @@
             border: none; color: white; padding: 22px; border-radius: 16px;
             font-size: 1.25rem; font-weight: bold; margin: 20px 0; cursor: pointer;
             box-shadow: 0 10px 25px rgba(112, 0, 255, 0.4);
-            transition: transform 0.2s;
         }
-        .btn-submit:active { transform: scale(0.98); }
 
-        .backup-zone { margin-top: auto; padding-top: 20px; display: flex; gap: 10px; }
+        .backup-zone { margin-top: auto; padding-top: 15px; display: flex; gap: 8px; }
         .btn-small { flex: 1; background: #1a1a1a; border: 1px solid #333; color: #777; padding: 10px; border-radius: 10px; font-size: 0.7rem; cursor: pointer; }
     </style>
 </head>
@@ -157,6 +164,12 @@
             <div class="level-badge" id="playerLevel">LV.1 见习学者</div>
         </div>
         
+        <div class="countdown-box">
+            <div class="countdown-label">毕业论文提交倒计时</div>
+            <div class="countdown-days" id="thesisCountdown">---</div>
+            <div style="font-size: 0.6rem; color: #888; margin-top: 4px;">目标日期：2026年7月31日</div>
+        </div>
+
         <div class="stats-grid">
             <div class="stat-box"><div class="stat-label">智力 INT</div><div class="stat-value" id="statINT" style="color:var(--int-color)">10</div></div>
             <div class="stat-box"><div class="stat-label">体质 CON</div><div class="stat-value" id="statCON" style="color:var(--con-color)">10</div></div>
@@ -171,38 +184,35 @@
         </div>
 
         <div class="backup-zone">
-            <button class="btn-small" onclick="exportSave()">💾 导出备份</button>
-            <button class="btn-small" onclick="importSave()">📂 导入存档</button>
+            <button class="btn-small" onclick="exportSave()">💾 导出</button>
+            <button class="btn-small" onclick="importSave()">📂 导入</button>
         </div>
     </aside>
 
     <main class="content">
-        <div id="todayStatus" style="text-align: right; color: #666; font-size: 0.85rem; margin-bottom: 5px;">状态：系统就绪</div>
+        <div id="todayStatus" style="text-align: right; color: #666; font-size: 0.85rem; margin-bottom: 5px;">系统状态：在线</div>
         <div id="core-tasks"></div>
         <div id="side-tasks"></div>
-        <button class="btn-submit" id="submitBtn" onclick="submitDay()">⚡ 提交今日战果</button>
-        <div style="text-align: center; color: #444; font-size: 0.7rem; margin-top: 10px;">
-            当前规则：支持单日弹性豁免 | 毕业倒计时：2026年中
-        </div>
+        <button class="btn-submit" id="submitBtn" onclick="submitDay()">⚡ 结算今日副本</button>
     </main>
 </div>
 
 <script>
     const coreTasks = [
-        { id: 'sci', name: 'SCI 论文攻坚', desc: '多立管系统撰写≥2h 或 章节更新', pts: 30 },
+        { id: 'sci', name: 'SCI 论文攻坚', desc: '撰写≥2h 或 章节重大更新', pts: 30 },
         { id: 'cfd', name: '数值模拟分析', desc: 'Fluent/VOF 数据处理或模型优化', pts: 20 },
-        { id: 'patent', name: '专利撰写', desc: '地漏发明专利或核心创新点细化', pts: 10 }
+        { id: 'patent', name: '专利撰写', desc: '权利要求书或核心创新点细化', pts: 10 }
     ];
 
     const sideTasks = [
         { id: 'stairs', name: '纵向位移', desc: '爬楼梯≥20层', pts: 10 },
         { id: 'core', name: '核心加固', desc: '平板支撑/端腹', pts: 10 },
-        { id: 'read', name: '灵感捕手', desc: '专业外书籍阅读+随笔', pts: 6 },
+        { id: 'read', name: '灵感捕手', desc: '书籍阅读+随笔', pts: 6 },
         { id: 'color', name: '视界重构', desc: '构图/色彩练习', pts: 6 },
         { id: 'talk', name: '共鸣共振', desc: '即兴演讲或深度社交', pts: 8 }
     ];
 
-    // 初始化 state，增加 missedDays 逻辑
+    // 初始化 state，包含弹性豁免逻辑
     let state = JSON.parse(localStorage.getItem('drainage_rpg_v37')) || { 
         xp: 0, 
         streak: 0, 
@@ -214,7 +224,23 @@
     function init() {
         renderTasks();
         refreshUI();
-        document.addEventListener("visibilitychange", () => { if (document.visibilityState === 'visible') refreshUI(); });
+        updateCountdown();
+        document.addEventListener("visibilitychange", () => { if (document.visibilityState === 'visible') { refreshUI(); updateCountdown(); } });
+    }
+
+    // 倒计时核心函数
+    function updateCountdown() {
+        const targetDate = new Date("2026-07-31T00:00:00");
+        const now = new Date();
+        const diff = targetDate - now;
+        
+        if (diff > 0) {
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            document.getElementById('thesisCountdown').innerText = `${days} 天`;
+        } else {
+            document.getElementById('thesisCountdown').innerText = "已到期";
+            document.getElementById('thesisCountdown').style.color = "var(--warning)";
+        }
     }
 
     function renderTasks() {
@@ -244,7 +270,7 @@
         document.getElementById('playerLevel').innerText = `LV.${level} ${titles[Math.min(level-1, 4)]}`;
         ['INT', 'CON', 'PER', 'CHA'].forEach(s => { document.getElementById(`stat${s}`).innerText = baseStat + streakBuff; });
         if (state.lastDate === new Date().toDateString()) {
-            document.getElementById('todayStatus').innerText = "✅ 今日副本已完美封存";
+            document.getElementById('todayStatus').innerText = "✅ 今日副本已封存";
             const btn = document.getElementById('submitBtn');
             btn.disabled = true; btn.style.opacity = "0.5"; btn.innerText = "结算已完成";
         }
@@ -256,26 +282,18 @@
         document.querySelectorAll('.s-check').forEach(i => { if(i.checked) { dailyXP += parseInt(i.dataset.pts); sideCount++; } });
         
         if (coreDone && sideCount >= 3) {
-            state.xp += dailyXP;
-            state.streak++;
-            state.missedDays = 0; // 重置豁免计数
+            state.xp += dailyXP; state.streak++; state.missedDays = 0;
             if(state.streak % 7 === 0) { state.coins++; alert("✨ 触发连胜神迹！复活币 +1"); }
             alert(`结算成功！连胜记录：${state.streak} 天`);
         } else {
-            // 宽松逻辑判定
             if (state.missedDays < 1) {
-                state.missedDays++;
-                state.xp += dailyXP;
-                alert("⚠️ 未达全勤，但触发了‘博士的弹性豁免’，连胜保住了！积分已累加。");
+                state.missedDays++; state.xp += dailyXP;
+                alert("⚠️ 触发‘博士的弹性豁免’，连胜已保住！");
             } else if (state.coins > 0 && confirm("⚠️ 已耗尽豁免权！是否消耗复活币保住连胜？")) {
-                state.coins--; 
-                state.xp += dailyXP;
-                state.missedDays = 0;
+                state.coins--; state.xp += dailyXP; state.missedDays = 0;
             } else {
-                state.streak = 0; 
-                state.xp += dailyXP;
-                state.missedDays = 0;
-                alert("💔 连续中断。学术长跑需要休息，明天重新出发！");
+                state.streak = 0; state.xp += dailyXP; state.missedDays = 0;
+                alert("💔 连胜中断。");
             }
         }
         state.lastDate = new Date().toDateString();

@@ -20,6 +20,7 @@
             --text: #e0e0e0;
             --gold: #ffd700;
             --success: #39ff14;
+            --warning: #ffcc00;
             --int-color: #3498db;
             --con-color: #e74c3c;
             --per-color: #2ecc71;
@@ -60,7 +61,6 @@
             display: flex;
             flex-direction: column;
             overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
         }
 
         .content {
@@ -69,7 +69,6 @@
             padding-right: 10px;
             display: flex;
             flex-direction: column;
-            -webkit-overflow-scrolling: touch;
         }
 
         @media (max-width: 900px), (orientation: portrait) {
@@ -87,6 +86,7 @@
         }
         .player-name { font-size: 1.4rem; font-weight: bold; text-align: center; margin-top: 15px; color: var(--primary); letter-spacing: 1px; }
         .player-title { font-size: 0.85rem; text-align: center; color: #888; margin-top: 5px; }
+        
         .level-badge {
             background: linear-gradient(45deg, var(--secondary), var(--primary));
             color: white; padding: 6px 18px; border-radius: 20px;
@@ -94,13 +94,13 @@
             width: fit-content; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        /* 属性网格：已调换至上方 */
+        /* 属性网格：置顶 */
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; margin-bottom: 20px; }
         .stat-box { background: rgba(0,0,0,0.2); padding: 12px; border-radius: 12px; text-align: center; border: 1px solid #222; }
         .stat-label { font-size: 0.65rem; color: #888; text-transform: uppercase; }
         .stat-value { font-size: 1.15rem; font-weight: bold; margin-top: 2px; }
 
-        /* 核心成就栏：已调换至下方 */
+        /* 核心成就栏 */
         .achievement-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -120,7 +120,13 @@
         .ach-val { font-size: 1.1rem; font-weight: bold; color: var(--primary); }
 
         .section-title { color: var(--gold); font-size: 1.1rem; margin: 20px 0 15px; border-left: 4px solid var(--gold); padding-left: 10px; display: flex; align-items: center; justify-content: space-between;}
-        .task-card { background: var(--card-bg); border-radius: 16px; padding: 18px; margin-bottom: 12px; display: flex; align-items: center; border-left: 5px solid var(--secondary); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        
+        .task-card {
+            background: var(--card-bg); border-radius: 16px; padding: 18px;
+            margin-bottom: 12px; display: flex; align-items: center;
+            border-left: 5px solid var(--secondary);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
         .task-info { flex: 1; }
         .task-name { font-weight: bold; font-size: 1.05rem; }
         .task-desc { font-size: 0.85rem; color: #aaa; margin-top: 4px; }
@@ -171,29 +177,39 @@
     </aside>
 
     <main class="content">
-        <div id="todayStatus" style="text-align: right; color: #666; font-size: 0.85rem; margin-bottom: 5px;">状态：系统已连接</div>
+        <div id="todayStatus" style="text-align: right; color: #666; font-size: 0.85rem; margin-bottom: 5px;">状态：系统就绪</div>
         <div id="core-tasks"></div>
         <div id="side-tasks"></div>
         <button class="btn-submit" id="submitBtn" onclick="submitDay()">⚡ 提交今日战果</button>
+        <div style="text-align: center; color: #444; font-size: 0.7rem; margin-top: 10px;">
+            当前规则：支持单日弹性豁免 | 毕业倒计时：2026年中
+        </div>
     </main>
 </div>
 
 <script>
     const coreTasks = [
-        { id: 'sci', name: 'SCI 论文攻坚', desc: '撰写≥2h 或 章节重大更新', pts: 30 },
+        { id: 'sci', name: 'SCI 论文攻坚', desc: '多立管系统撰写≥2h 或 章节更新', pts: 30 },
         { id: 'cfd', name: '数值模拟分析', desc: 'Fluent/VOF 数据处理或模型优化', pts: 20 },
-        { id: 'patent', name: '专利撰写', desc: '权利要求书或核心创新点细化', pts: 10 }
+        { id: 'patent', name: '专利撰写', desc: '地漏发明专利或核心创新点细化', pts: 10 }
     ];
 
     const sideTasks = [
         { id: 'stairs', name: '纵向位移', desc: '爬楼梯≥20层', pts: 10 },
         { id: 'core', name: '核心加固', desc: '平板支撑/端腹', pts: 10 },
-        { id: 'read', name: '灵感捕手', desc: '书籍阅读+随笔', pts: 6 },
+        { id: 'read', name: '灵感捕手', desc: '专业外书籍阅读+随笔', pts: 6 },
         { id: 'color', name: '视界重构', desc: '构图/色彩练习', pts: 6 },
         { id: 'talk', name: '共鸣共振', desc: '即兴演讲或深度社交', pts: 8 }
     ];
 
-    let state = JSON.parse(localStorage.getItem('drainage_rpg_v32')) || { xp: 0, streak: 0, coins: 0, lastDate: "" };
+    // 初始化 state，增加 missedDays 逻辑
+    let state = JSON.parse(localStorage.getItem('drainage_rpg_v37')) || { 
+        xp: 0, 
+        streak: 0, 
+        coins: 0, 
+        lastDate: "",
+        missedDays: 0 
+    };
 
     function init() {
         renderTasks();
@@ -238,16 +254,32 @@
         let dailyXP = 0, coreDone = true, sideCount = 0;
         document.querySelectorAll('.c-check').forEach(i => { if(i.checked) dailyXP += parseInt(i.dataset.pts); else coreDone = false; });
         document.querySelectorAll('.s-check').forEach(i => { if(i.checked) { dailyXP += parseInt(i.dataset.pts); sideCount++; } });
+        
         if (coreDone && sideCount >= 3) {
-            state.xp += dailyXP; state.streak++;
+            state.xp += dailyXP;
+            state.streak++;
+            state.missedDays = 0; // 重置豁免计数
             if(state.streak % 7 === 0) { state.coins++; alert("✨ 触发连胜神迹！复活币 +1"); }
             alert(`结算成功！连胜记录：${state.streak} 天`);
         } else {
-            if(state.coins > 0 && confirm("⚠️ 未达全勤！是否消耗复活币保住连胜？")) { state.coins--; state.xp += dailyXP; }
-            else { state.streak = 0; state.xp += dailyXP; alert("连胜中断。"); }
+            // 宽松逻辑判定
+            if (state.missedDays < 1) {
+                state.missedDays++;
+                state.xp += dailyXP;
+                alert("⚠️ 未达全勤，但触发了‘博士的弹性豁免’，连胜保住了！积分已累加。");
+            } else if (state.coins > 0 && confirm("⚠️ 已耗尽豁免权！是否消耗复活币保住连胜？")) {
+                state.coins--; 
+                state.xp += dailyXP;
+                state.missedDays = 0;
+            } else {
+                state.streak = 0; 
+                state.xp += dailyXP;
+                state.missedDays = 0;
+                alert("💔 连续中断。学术长跑需要休息，明天重新出发！");
+            }
         }
         state.lastDate = new Date().toDateString();
-        localStorage.setItem('drainage_rpg_v32', JSON.stringify(state));
+        localStorage.setItem('drainage_rpg_v37', JSON.stringify(state));
         location.reload();
     }
 
@@ -261,7 +293,7 @@
         if (code) {
             try {
                 const decoded = JSON.parse(atob(code));
-                if (decoded.xp !== undefined) { state = decoded; localStorage.setItem('drainage_rpg_v32', JSON.stringify(state)); location.reload(); }
+                if (decoded.xp !== undefined) { state = decoded; localStorage.setItem('drainage_rpg_v37', JSON.stringify(state)); location.reload(); }
             } catch (e) { alert("失败！"); }
         }
     }

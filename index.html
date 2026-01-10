@@ -46,7 +46,6 @@
             .content { overflow-y: visible; }
         }
 
-        /* UI 组件 */
         .avatar-img { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary); box-shadow: 0 0 15px var(--primary); display: block; margin: 0 auto; }
         .player-name { font-size: 1.6rem; font-weight: bold; text-align: center; margin-top: 12px; color: var(--primary); }
         .level-badge { background: linear-gradient(45deg, var(--secondary), var(--primary)); color: white; padding: 6px 16px; border-radius: 15px; font-size: 1rem; font-weight: bold; display: block; margin: 10px auto; text-align: center; width: fit-content; }
@@ -69,9 +68,10 @@
         .cd-zone { margin-top: 15px; background: rgba(255, 71, 87, 0.12); border: 1px solid rgba(255, 71, 87, 0.3); border-radius: 15px; padding: 15px; text-align: center; }
         .ms-card { margin-top: 10px; background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); border-radius: 15px; padding: 15px; text-align: center; }
 
-        .backup-zone { margin-top: auto; padding-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .btn-small { background: #1a1a1a; border: 1px solid #333; color: #777; padding: 10px; border-radius: 10px; font-size: 0.75rem; cursor: pointer; }
-        .btn-sync { grid-column: span 2; background: rgba(112, 0, 255, 0.2); border-color: var(--secondary); color: var(--primary); margin-top: 5px; }
+        .backup-zone { margin-top: auto; padding-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn-small { background: #1a1a1a; border: 1px solid #333; color: #777; padding: 14px; border-radius: 12px; font-size: 0.85rem; cursor: pointer; font-weight: bold; }
+        .btn-export { border-color: var(--success); color: var(--success); }
+        .btn-import { border-color: var(--primary); color: var(--primary); }
 
         .section-title { color: var(--gold); font-size: 1.4rem; margin: 25px 0 15px; border-left: 6px solid var(--gold); padding-left: 15px; font-weight: bold; }
         .task-card { background: var(--card-bg); border-radius: 20px; padding: 25px; margin-bottom: 18px; display: flex; align-items: center; border-left: 8px solid var(--secondary); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
@@ -124,14 +124,14 @@
         </div>
 
         <div class="backup-zone">
-            <button class="btn-small" onclick="exportSave()">备份</button>
-            <button class="btn-small" onclick="importSave()">导入</button>
-            <button class="btn-small btn-sync" onclick="generateSyncLink()">🔗 生成跨端同步链接</button>
+            <button class="btn-small btn-export" onclick="exportSave()">📤 导出备份</button>
+            <button class="btn-small btn-import" onclick="importSave()">📥 导入存档</button>
         </div>
+        <div style="font-size: 0.65rem; color: #555; text-align: center; margin-top: 8px;">* 跨设备同步请通过微信发送备份代码</div>
     </aside>
 
     <main class="content">
-        <div id="todayStatus" style="text-align: right; color: #666; font-size: 1rem; margin-bottom: 10px;">系统已连接...</div>
+        <div id="todayStatus" style="text-align: right; color: #666; font-size: 1rem; margin-bottom: 10px;">系统状态：稳定</div>
         <div id="core-tasks"></div>
         <div id="side-tasks"></div>
         <button class="btn-submit" id="submitBtn" onclick="submitDay()">⚡ 提交今日战果</button>
@@ -153,10 +153,10 @@
     ];
     const rewardSettings = [
         { xp: 500, name: "半天外出放松", type: 'cycle', icon: "🌳" },
-        { xp: 1500, name: "一份冰激凌/甜品", type: 'cycle', icon: "🍦" },
-        { xp: 3000, name: "一顿美食奖励", type: 'cycle', icon: "🍖" },
-        { xp: 6000, name: "一个手办奖励", type: 'cycle', icon: "🧩" },
-        { xp: 10000, name: "1000元购物金", type: 'cycle', icon: "🧧" }
+        { xp: 1400, name: "一份冰激凌/甜品", type: 'cycle', icon: "🍦" },
+        { xp: 2800, name: "一顿美食奖励", type: 'cycle', icon: "🍖" },
+        { xp: 5600, name: "一个手办奖励", type: 'cycle', icon: "🧩" },
+        { xp: 8400, name: "1000元购物金", type: 'cycle', icon: "🧧" }
     ];
 
     let state = JSON.parse(localStorage.getItem('drainage_rpg_v39')) || { 
@@ -164,48 +164,22 @@
     };
 
     function init() {
-        // --- 核心同步逻辑：检测 URL 参数 ---
-        const urlParams = new URLSearchParams(window.location.search);
-        const syncData = urlParams.get('sync');
-        if (syncData) {
-            try {
-                const decoded = JSON.parse(decodeURIComponent(escape(atob(syncData))));
-                if (confirm("检测到来自另一台设备的同步数据，是否覆盖当前进度？")) {
-                    state = decoded;
-                    localStorage.setItem('drainage_rpg_v39', JSON.stringify(state));
-                    window.location.href = window.location.pathname; // 同步后清理链接
-                    return;
-                }
-            } catch (e) { alert("同步链已失效。"); }
-        }
-
         renderTasks(); refreshUI(); updateCountdown(); renderRewards();
         document.addEventListener("visibilitychange", () => { if (document.visibilityState === 'visible') { refreshUI(); updateCountdown(); } });
-    }
-
-    function generateSyncLink() {
-        const data = btoa(unescape(encodeURIComponent(JSON.stringify(state))));
-        const syncUrl = window.location.origin + window.location.pathname + "?sync=" + data;
-        navigator.clipboard.writeText(syncUrl).then(() => {
-            alert("✅ 同步链接已复制！\n请发给另一台设备，点开即可完成同步。");
-        });
     }
 
     function refreshUI() {
         document.getElementById('totalXP').innerText = state.xp;
         document.getElementById('streak').innerText = state.streak;
         document.getElementById('maxStreak').innerText = state.maxStreak || 0;
-        
         const level = Math.floor(state.xp / 3000) + 1;
         const titles = ["迷雾拾荒者", "逻辑执旗手", "秩序炼金师", "真理守望者", "至臻·觉醒圣贤"];
         document.getElementById('playerLevel').innerText = `LV.${level} ${titles[Math.min(level-1, 4)]}`;
-        
         ['INT', 'CON', 'PER', 'CHA'].forEach(s => { 
             document.getElementById(`stat${s}`).innerText = 10 + (level-1)*5 + Math.floor(state.streak/7)*3; 
         });
-        
         if (state.lastDate === new Date().toDateString()) {
-            document.getElementById('todayStatus').innerText = "✅ 今日副本已锁定";
+            document.getElementById('todayStatus').innerText = "✅ 副本锁定中";
             const btn = document.getElementById('submitBtn');
             btn.disabled = true; btn.style.opacity = "0.5"; btn.innerText = "今日结算已完成";
             document.querySelectorAll('input[type="checkbox"]').forEach(i => i.disabled = true);
@@ -238,34 +212,41 @@
         let dailyXP = 0, coreDone = true, sideCount = 0;
         document.querySelectorAll('.c-check').forEach(i => { if(i.checked) dailyXP += parseInt(i.dataset.pts); else coreDone = false; });
         document.querySelectorAll('.s-check').forEach(i => { if(i.checked) { dailyXP += parseInt(i.dataset.pts); sideCount++; } });
-        
         if (coreDone && sideCount >= 3) {
             state.xp += dailyXP; state.streak++; state.missedDays = 0;
             if (state.streak > (state.maxStreak || 0)) state.maxStreak = state.streak;
             if(state.streak % 7 === 0) { state.coins++; alert("✨ 触发连胜神迹！复活币 +1"); }
+            alert(`结算成功！增加经验：${dailyXP}`);
         } else {
-            if (state.missedDays < 1) { state.missedDays++; state.xp += dailyXP; alert("⚠️ 触发‘博士弹性豁免’！"); }
-            else if (state.coins > 0 && confirm("消耗复活币保住连胜？")) { state.coins--; state.xp += dailyXP; state.missedDays = 0; }
-            else { state.streak = 0; state.xp += dailyXP; state.missedDays = 0; alert("💔 连胜中断。"); }
+            if (state.missedDays < 1) { 
+                state.missedDays++; state.xp += dailyXP; alert("⚠️ 触发弹性豁免！连胜保住了。"); 
+            } else if (state.coins > 0 && confirm("消耗复活币保住连胜？")) { 
+                state.coins--; state.xp += dailyXP; state.missedDays = 0; 
+            } else { 
+                state.streak = 0; state.xp += dailyXP; state.missedDays = 0; alert("💔 连胜中断。"); 
+            }
         }
         state.lastDate = new Date().toDateString();
         localStorage.setItem('drainage_rpg_v39', JSON.stringify(state));
         location.reload();
     }
 
+    // 核心同步工具
     function exportSave() { 
         const str = btoa(unescape(encodeURIComponent(JSON.stringify(state))));
-        navigator.clipboard.writeText(str).then(() => alert("存档已克隆。")); 
+        navigator.clipboard.writeText(str).then(() => {
+            alert("📤 备份成功！\n代码已复制到剪贴板。\n请发送到微信，在另一台设备上‘导入’。");
+        }); 
     }
     
     function importSave() { 
-        const code = prompt("接入存档代码："); 
+        const code = prompt("请输入另一台设备的备份代码："); 
         if (code) { 
             try { 
                 state = JSON.parse(decodeURIComponent(escape(atob(code)))); 
                 localStorage.setItem('drainage_rpg_v39', JSON.stringify(state)); 
                 location.reload(); 
-            } catch (e) { alert("失败。"); } 
+            } catch (e) { alert("❌ 解析失败，请检查代码是否完整。"); } 
         } 
     }
     window.onload = init;

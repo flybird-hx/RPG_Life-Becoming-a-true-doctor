@@ -12,19 +12,10 @@
 
     <style>
         :root {
-            --primary: #00f2ff;
-            --secondary: #7000ff;
-            --bg: #0a0b1e;
-            --card-bg: #161b33;
-            --sidebar-bg: #11152b;
-            --text: #e0e0e0;
-            --gold: #ffd700;
-            --success: #39ff14;
-            --warning: #ff4757;
-            --int-color: #3498db;
-            --con-color: #e74c3c;
-            --per-color: #2ecc71;
-            --cha-color: #9b59b6;
+            --primary: #00f2ff; --secondary: #7000ff; --bg: #0a0b1e;
+            --card-bg: #161b33; --sidebar-bg: #11152b; --text: #e0e0e0;
+            --gold: #ffd700; --success: #39ff14; --warning: #ff4757;
+            --int-color: #3498db; --con-color: #e74c3c; --per-color: #2ecc71; --cha-color: #9b59b6;
         }
 
         body {
@@ -41,7 +32,7 @@
         }
 
         .sidebar {
-            flex: 0 0 340px; background: var(--sidebar-bg); border-radius: 24px;
+            flex: 0 0 350px; background: var(--sidebar-bg); border-radius: 24px;
             padding: 20px; border: 2px solid var(--secondary);
             box-shadow: 0 0 25px rgba(112, 0, 255, 0.25);
             display: flex; flex-direction: column; overflow-y: auto;
@@ -56,32 +47,35 @@
             .content { overflow-y: visible; }
         }
 
-        /* --- 侧边栏字体放大优化 --- */
+        /* 侧边栏字体放大优化 */
         .avatar-img { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary); box-shadow: 0 0 15px var(--primary); display: block; margin: 0 auto; }
         .player-name { font-size: 1.5rem; font-weight: bold; text-align: center; margin-top: 12px; color: var(--primary); }
         .level-badge { background: linear-gradient(45deg, var(--secondary), var(--primary)); color: white; padding: 6px 16px; border-radius: 15px; font-size: 0.9rem; font-weight: bold; display: block; margin: 10px auto; text-align: center; width: fit-content; }
 
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .stat-box { background: rgba(0,0,0,0.3); padding: 12px; border-radius: 12px; text-align: center; border: 1px solid #333; }
-        .stat-label { font-size: 0.7rem; color: #888; font-weight: bold; }
-        .stat-value { font-size: 1.4rem; font-weight: bold; } /* 属性数字变大 */
+        .stat-label { font-size: 0.7rem; color: #888; }
+        .stat-value { font-size: 1.4rem; font-weight: bold; }
 
         .ach-card { background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 12px; padding: 12px; display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
         .ach-label { font-size: 0.8rem; color: #aaa; }
-        .ach-val { font-size: 1.2rem; font-weight: bold; color: var(--primary); } /* 经验数字变大 */
+        .ach-val { font-size: 1.2rem; font-weight: bold; color: var(--primary); }
 
-        /* 奖励里程碑模块 */
+        /* 循环奖励模块 UI */
         .reward-zone { margin-top: 18px; padding: 15px; background: rgba(57, 255, 20, 0.05); border: 1px dashed rgba(57, 255, 20, 0.4); border-radius: 15px; }
-        .reward-header { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--success); font-weight: bold; margin-bottom: 10px; }
-        .progress-bar-bg { width: 100%; height: 8px; background: #222; border-radius: 10px; overflow: hidden; margin-bottom: 12px; }
-        .progress-bar-fill { height: 100%; background: var(--success); width: 0%; transition: width 0.5s; box-shadow: 0 0 12px var(--success); }
-        .reward-item { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; margin-bottom: 8px; color: #666; transition: color 0.3s; }
-        .reward-item.unlocked { color: var(--gold); font-weight: bold; }
+        .reward-header { font-size: 0.85rem; color: var(--success); font-weight: bold; margin-bottom: 12px; display: flex; justify-content: space-between; }
+        
+        .reward-item { 
+            display: flex; justify-content: space-between; align-items: center; 
+            font-size: 0.95rem; margin-bottom: 10px; color: #666; 
+            padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.02);
+        }
+        .reward-item.unlocked { color: var(--gold); background: rgba(255,215,0,0.05); }
+        .reward-count { background: var(--gold); color: #000; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: bold; }
 
-        /* 倒计时与最高纪录放大 */
+        /* 倒计时与最高纪录 */
         .cd-zone { margin-top: 15px; background: rgba(255, 71, 87, 0.1); border: 1px solid rgba(255, 71, 87, 0.3); border-radius: 15px; padding: 12px; text-align: center; }
         .ms-card { margin-top: 10px; background: rgba(255,215,0,0.08); border: 1px solid rgba(255,215,0,0.2); border-radius: 15px; padding: 12px; text-align: center; }
-        .ms-val-big { font-size: 2.2rem; font-weight: bold; color: var(--gold); text-shadow: 0 0 15px rgba(255,215,0,0.4); }
 
         .backup-zone { margin-top: auto; padding-top: 15px; display: flex; gap: 10px; }
         .btn-small { flex: 1; background: #1a1a1a; border: 1px solid #333; color: #777; padding: 10px; border-radius: 10px; font-size: 0.7rem; cursor: pointer; }
@@ -90,13 +84,11 @@
         .section-title { color: var(--gold); font-size: 1.3rem; margin: 25px 0 15px; border-left: 5px solid var(--gold); padding-left: 12px; font-weight: bold; }
         .task-card { background: var(--card-bg); border-radius: 18px; padding: 22px; margin-bottom: 15px; display: flex; align-items: center; border-left: 6px solid var(--secondary); box-shadow: 0 6px 15px rgba(0,0,0,0.3); }
         .task-info { flex: 1; }
-        .task-name { font-weight: bold; font-size: 1.2rem; } /* 任务名变大 */
-        .task-desc { font-size: 0.95rem; color: #aaa; margin-top: 6px; }
-        .task-pts-display { font-size: 1.1rem; font-weight: bold; color: var(--success); margin: 0 20px; min-width: 45px; text-align: right; }
-        input[type="checkbox"] { width: 36px; height: 36px; cursor: pointer; accent-color: var(--primary); }
+        .task-name { font-weight: bold; font-size: 1.25rem; }
+        .task-pts-display { font-size: 1.15rem; font-weight: bold; color: var(--success); margin: 0 20px; min-width: 45px; text-align: right; }
+        input[type="checkbox"] { width: 38px; height: 38px; cursor: pointer; accent-color: var(--primary); }
 
-        .btn-submit { background: linear-gradient(45deg, var(--secondary), var(--primary)); border: none; color: white; padding: 25px; border-radius: 20px; font-size: 1.5rem; font-weight: bold; margin: 20px 0; cursor: pointer; box-shadow: 0 12px 30px rgba(112, 0, 255, 0.5); transition: transform 0.2s; }
-        .btn-submit:active { transform: scale(0.97); }
+        .btn-submit { background: linear-gradient(45deg, var(--secondary), var(--primary)); border: none; color: white; padding: 25px; border-radius: 20px; font-size: 1.5rem; font-weight: bold; margin: 20px 0; cursor: pointer; box-shadow: 0 12px 30px rgba(112, 0, 255, 0.5); }
     </style>
 </head>
 <body>
@@ -110,44 +102,43 @@
         </div>
         
         <div class="stats-grid">
-            <div class="stat-box"><div class="stat-label">智力 INT</div><div class="stat-value" id="statINT" style="color:var(--int-color)">10</div></div>
-            <div class="stat-box"><div class="stat-label">体质 CON</div><div class="stat-value" id="statCON" style="color:var(--con-color)">10</div></div>
-            <div class="stat-box"><div class="stat-label">感知 PER</div><div class="stat-value" id="statPER" style="color:var(--per-color)">10</div></div>
-            <div class="stat-box"><div class="stat-label">魅力 CHA</div><div class="stat-value" id="statCHA" style="color:var(--cha-color)">10</div></div>
+            <div class="stat-box"><div class="stat-label">智力 INT</div><div class="stat-value" id="statINT">10</div></div>
+            <div class="stat-box"><div class="stat-label">体质 CON</div><div class="stat-value" id="statCON">10</div></div>
+            <div class="stat-box"><div class="stat-label">感知 PER</div><div class="stat-value" id="statPER">10</div></div>
+            <div class="stat-box"><div class="stat-label">魅力 CHA</div><div class="stat-value" id="statCHA">10</div></div>
         </div>
 
         <div class="achievement-grid">
             <div class="ach-card"><span class="ach-label">累计经验</span><span id="totalXP" class="ach-val">0</span></div>
-            <div class="ach-card"><span class="ach-label">当前全勤</span><span id="streak" class="ach-val">0</span></div>
+            <div class="ach-card"><span class="ach-label">连续天数</span><span id="streak" class="ach-val">0</span></div>
         </div>
 
         <div class="reward-zone">
-            <div class="reward-header"><span>🎁 成就奖励清单</span><span id="nextGoal">目标: 500</span></div>
-            <div class="progress-bar-bg"><div id="rewardProgress" class="progress-bar-fill"></div></div>
+            <div class="reward-header"><span>🎁 奖励兑换清单</span><small style="font-weight:normal; opacity:0.7">自动结算</small></div>
             <div id="rewardList"></div>
         </div>
 
         <div class="cd-zone">
-            <div style="font-size: 0.75rem; color: var(--warning); font-weight: bold; text-transform: uppercase;">毕业论文提交倒计时</div>
+            <div style="font-size: 0.75rem; color: var(--warning); font-weight: bold;">毕业论文提交倒计时</div>
             <div id="thesisCountdown" style="font-size: 1.8rem; font-weight: bold; margin: 4px 0;">---</div>
         </div>
 
         <div class="ms-card">
-            <div style="font-size: 0.75rem; color: var(--gold); font-weight: bold;">🏆 最高连续天数纪录</div>
-            <div class="ms-val-big"><span id="maxStreak">0</span><small style="font-size: 1rem;"> 天</small></div>
+            <div style="font-size: 0.75rem; color: var(--gold); font-weight: bold;">🏆 最高连续全勤纪录</div>
+            <div style="font-size: 2.2rem; font-weight: bold; color: var(--gold);"><span id="maxStreak">0</span><small style="font-size: 1rem;"> 天</small></div>
         </div>
 
         <div class="backup-zone">
-            <button class="btn-small" onclick="exportSave()">导出备份</button>
-            <button class="btn-small" onclick="importSave()">导入存档</button>
+            <button class="btn-small" onclick="exportSave()">备份</button>
+            <button class="btn-small" onclick="importSave()">导入</button>
         </div>
     </aside>
 
     <main class="content">
-        <div id="todayStatus" style="text-align: right; color: #666; font-size: 0.9rem; margin-bottom: 8px;">系统已连接，胡博士</div>
+        <div id="todayStatus" style="text-align: right; color: #666; font-size: 0.9rem; margin-bottom: 8px;">系统同步中...</div>
         <div id="core-tasks"></div>
         <div id="side-tasks"></div>
-        <button class="btn-submit" id="submitBtn" onclick="submitDay()">⚡ 结算今日副本</button>
+        <button class="btn-submit" id="submitBtn" onclick="submitDay()">⚡ 提交今日战果</button>
     </main>
 </div>
 
@@ -165,13 +156,13 @@
         { id: 'talk', name: '共鸣共振', desc: '即兴演讲或深度社交', pts: 8 }
     ];
 
-    // 已更新奖励目标
-    const rewardMilestones = [
-        { xp: 500, name: "半天外出放松", icon: "🌳" },
-        { xp: 1500, name: "一份冰激凌/甜品", icon: "🍦" },
-        { xp: 3000, name: "一顿美食奖励", icon: "🍖" },
-        { xp: 6000, name: "一个手办奖励", icon: "🧩" },
-        { xp: 10000, name: "1000元购物金", icon: "🧧" }
+    // 奖励配置：type: 'cycle' 代表每 X 分奖励一次；type: 'once' 代表达到 X 分奖励一次
+    const rewardSettings = [
+        { xp: 500, name: "半天外出放松", type: 'cycle', icon: "🌳" },
+        { xp: 1500, name: "一份冰激凌/甜品", type: 'cycle', icon: "🍦" },
+        { xp: 3000, name: "一顿美食奖励", type: 'cycle', icon: "🍖" },
+        { xp: 6000, name: "一个手办奖励", type: 'once', icon: "🧩" },
+        { xp: 10000, name: "1000元购物金", type: 'once', icon: "🧧" }
     ];
 
     let state = JSON.parse(localStorage.getItem('drainage_rpg_v39')) || { 
@@ -183,28 +174,37 @@
         document.addEventListener("visibilitychange", () => { if (document.visibilityState === 'visible') { refreshUI(); updateCountdown(); } });
     }
 
-    function renderTasks() {
-        document.getElementById('core-tasks').innerHTML = '<div class="section-title">⚔️ 核心学术副本</div>' + 
-            coreTasks.map(t => `<div class="task-card"><div class="task-info"><b>${t.name}</b><br><small>${t.desc}</small></div><div class="task-pts-display">+${t.pts}</div><input type="checkbox" class="c-check" data-pts="${t.pts}"></div>`).join('');
-        document.getElementById('side-tasks').innerHTML = '<div class="section-title">🛠️ 自我提升副本</div>' + 
-            sideTasks.map(t => `<div class="task-card" style="border-left-color:var(--primary)"><div class="task-info"><b>${t.name}</b><br><small>${t.desc}</small></div><div class="task-pts-display" style="color:var(--primary)">+${t.pts}</div><input type="checkbox" class="s-check" data-pts="${t.pts}"></div>`).join('');
-    }
-
     function renderRewards() {
         const list = document.getElementById('rewardList');
-        list.innerHTML = rewardMilestones.map(m => `
-            <div class="reward-item ${state.xp >= m.xp ? 'unlocked' : ''}">
-                <i>${state.xp >= m.xp ? '✅' : '🔒'}</i>
-                <span><b>${m.xp} XP:</b> ${m.name}</span>
-            </div>`).join('');
-        const next = rewardMilestones.find(m => m.xp > state.xp) || rewardMilestones[rewardMilestones.length-1];
-        document.getElementById('nextGoal').innerText = `目标: ${next.xp}`;
-        document.getElementById('rewardProgress').style.width = Math.min((state.xp / next.xp) * 100, 100) + '%';
+        list.innerHTML = rewardSettings.map(r => {
+            let statusText = "";
+            let isUnlocked = false;
+
+            if (r.type === 'cycle') {
+                const count = Math.floor(state.xp / r.xp);
+                isUnlocked = count > 0;
+                statusText = isUnlocked ? `<span class="reward-count">已获 ${count} 次</span>` : `<small>每 ${r.xp} XP</small>`;
+            } else {
+                isUnlocked = state.xp >= r.xp;
+                statusText = isUnlocked ? `<span class="reward-count">已达成</span>` : `<small>需 ${r.xp} XP</small>`;
+            }
+
+            return `
+                <div class="reward-item ${isUnlocked ? 'unlocked' : ''}">
+                    <span>${r.icon} ${r.name}</span>
+                    ${statusText}
+                </div>`;
+        }).join('');
     }
 
     function updateCountdown() {
         const diff = new Date("2026-07-31T00:00:00") - new Date();
         document.getElementById('thesisCountdown').innerText = diff > 0 ? `${Math.floor(diff / (1000*60*60*24))} 天` : "已到期";
+    }
+
+    function renderTasks() {
+        document.getElementById('core-tasks').innerHTML = '<div class="section-title">⚔️ 核心学术副本</div>' + coreTasks.map(t => `<div class="task-card"><div class="task-info"><b>${t.name}</b><br><small>${t.desc}</small></div><div class="task-pts-display">+${t.pts}</div><input type="checkbox" class="c-check" data-pts="${t.pts}"></div>`).join('');
+        document.getElementById('side-tasks').innerHTML = '<div class="section-title">🛠️ 自我提升副本</div>' + sideTasks.map(t => `<div class="task-card" style="border-left-color:var(--primary)"><div class="task-info"><b>${t.name}</b><br><small>${t.desc}</small></div><div class="task-pts-display" style="color:var(--primary)">+${t.pts}</div><input type="checkbox" class="s-check" data-pts="${t.pts}"></div>`).join('');
     }
 
     function refreshUI() {
@@ -215,7 +215,7 @@
         document.getElementById('playerLevel').innerText = `LV.${level} ${["见习学者", "研究助理", "特聘研究员", "高级专家", "领航博导"][Math.min(level-1, 4)]}`;
         ['INT', 'CON', 'PER', 'CHA'].forEach(s => { document.getElementById(`stat${s}`).innerText = 10 + (level-1)*5 + Math.floor(state.streak/7)*3; });
         if (state.lastDate === new Date().toDateString()) {
-            const btn = document.getElementById('submitBtn'); btn.disabled = true; btn.style.opacity = "0.5"; btn.innerText = "今日结算已完成";
+            const btn = document.getElementById('submitBtn'); btn.disabled = true; btn.style.opacity = "0.5"; btn.innerText = "结算已完成";
         }
     }
 

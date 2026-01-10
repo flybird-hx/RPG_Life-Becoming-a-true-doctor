@@ -20,7 +20,7 @@
             --text: #e0e0e0;
             --gold: #ffd700;
             --success: #39ff14;
-            --warning: #ff4757; /* 更加鲜明的红色提醒 */
+            --warning: #ff4757;
             --int-color: #3498db;
             --con-color: #e74c3c;
             --per-color: #2ecc71;
@@ -80,28 +80,16 @@
             .content { overflow-y: visible; }
         }
 
-        /* 角色信息样式 */
+        /* 角色信息 */
         .avatar-img {
             width: 110px; height: 110px; border-radius: 50%;
             border: 4px solid var(--primary);
             box-shadow: 0 0 15px var(--primary);
             object-fit: cover; display: block; margin: 0 auto;
         }
-        .player-name { font-size: 1.3rem; font-weight: bold; text-align: center; margin-top: 10px; color: var(--primary); letter-spacing: 1px; }
+        .player-name { font-size: 1.3rem; font-weight: bold; text-align: center; margin-top: 10px; color: var(--primary); }
         .player-title { font-size: 0.8rem; text-align: center; color: #888; margin-top: 3px; }
         
-        /* 倒计时样式 */
-        .countdown-box {
-            background: rgba(255, 71, 87, 0.1);
-            border: 1px solid var(--warning);
-            border-radius: 12px;
-            padding: 10px;
-            margin-top: 15px;
-            text-align: center;
-        }
-        .countdown-label { font-size: 0.7rem; color: var(--warning); text-transform: uppercase; font-weight: bold; }
-        .countdown-days { font-size: 1.5rem; font-weight: bold; color: #fff; text-shadow: 0 0 10px var(--warning); }
-
         .level-badge {
             background: linear-gradient(45deg, var(--secondary), var(--primary));
             color: white; padding: 5px 15px; border-radius: 20px;
@@ -110,7 +98,7 @@
         }
 
         /* 属性网格 */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 5px; }
         .stat-box { background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; text-align: center; border: 1px solid #222; }
         .stat-label { font-size: 0.6rem; color: #888; }
         .stat-value { font-size: 1rem; font-weight: bold; }
@@ -120,7 +108,7 @@
             display: grid;
             grid-template-columns: 1fr;
             gap: 8px;
-            margin: 15px 0;
+            margin-top: 15px;
         }
         .ach-card {
             background: rgba(255,255,255,0.03);
@@ -134,8 +122,37 @@
         .ach-label { font-size: 0.7rem; color: #888; }
         .ach-val { font-size: 1rem; font-weight: bold; color: var(--primary); }
 
+        /* 底部倒计时与历史记录 */
+        .sidebar-bottom-zone {
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid #333;
+        }
+
+        .countdown-container {
+            background: rgba(255, 71, 87, 0.08);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .countdown-label { font-size: 0.65rem; color: var(--warning); text-transform: uppercase; font-weight: bold; margin-bottom: 2px; }
+        .countdown-days { font-size: 1.4rem; font-weight: bold; color: #fff; text-shadow: 0 0 8px var(--warning); }
+        
+        .history-record {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: #666;
+            margin-bottom: 15px;
+            padding: 0 5px;
+        }
+        .history-val { color: var(--gold); font-weight: bold; }
+
+        /* 任务面板样式 */
         .section-title { color: var(--gold); font-size: 1.1rem; margin: 20px 0 15px; border-left: 4px solid var(--gold); padding-left: 10px; display: flex; align-items: center; justify-content: space-between;}
-        .task-card { background: var(--card-bg); border-radius: 16px; padding: 18px; margin-bottom: 12px; display: flex; align-items: center; border-left: 5px solid var(--secondary); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .task-card { background: var(--card-bg); border-radius: 16px; padding: 18px; margin-bottom: 12px; display: flex; align-items: center; border-left: 5px solid var(--secondary); }
         .task-info { flex: 1; }
         .task-name { font-weight: bold; font-size: 1.05rem; }
         .task-desc { font-size: 0.85rem; color: #aaa; margin-top: 4px; }
@@ -149,8 +166,8 @@
             box-shadow: 0 10px 25px rgba(112, 0, 255, 0.4);
         }
 
-        .backup-zone { margin-top: auto; padding-top: 15px; display: flex; gap: 8px; }
-        .btn-small { flex: 1; background: #1a1a1a; border: 1px solid #333; color: #777; padding: 10px; border-radius: 10px; font-size: 0.7rem; cursor: pointer; }
+        .backup-buttons { display: flex; gap: 8px; }
+        .btn-small { flex: 1; background: #1a1a1a; border: 1px solid #333; color: #777; padding: 8px; border-radius: 8px; font-size: 0.65rem; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -164,12 +181,6 @@
             <div class="level-badge" id="playerLevel">LV.1 见习学者</div>
         </div>
         
-        <div class="countdown-box">
-            <div class="countdown-label">毕业论文提交倒计时</div>
-            <div class="countdown-days" id="thesisCountdown">---</div>
-            <div style="font-size: 0.6rem; color: #888; margin-top: 4px;">目标日期：2026年7月31日</div>
-        </div>
-
         <div class="stats-grid">
             <div class="stat-box"><div class="stat-label">智力 INT</div><div class="stat-value" id="statINT" style="color:var(--int-color)">10</div></div>
             <div class="stat-box"><div class="stat-label">体质 CON</div><div class="stat-value" id="statCON" style="color:var(--con-color)">10</div></div>
@@ -179,18 +190,31 @@
 
         <div class="achievement-grid">
             <div class="ach-card"><span class="ach-label">累计 XP</span><span id="totalXP" class="ach-val">0</span></div>
-            <div class="ach-card"><span class="ach-label">连续全勤</span><span id="streak" class="ach-val">0</span></div>
-            <div class="ach-card"><span class="ach-label">复活币</span><span id="coins" class="ach-val" style="color:var(--gold)">0</span></div>
+            <div class="ach-card"><span class="ach-label">当前连胜</span><span id="streak" class="ach-val">0</span></div>
+            <div class="ach-card"><span class="ach-label">可用复活币</span><span id="coins" class="ach-val" style="color:var(--gold)">0</span></div>
         </div>
 
-        <div class="backup-zone">
-            <button class="btn-small" onclick="exportSave()">💾 导出</button>
-            <button class="btn-small" onclick="importSave()">📂 导入</button>
+        <div class="sidebar-bottom-zone">
+            <div class="countdown-container">
+                <div class="countdown-label">毕业论文截止倒计时</div>
+                <div class="countdown-days" id="thesisCountdown">---</div>
+                <div style="font-size: 0.55rem; color: #555; margin-top: 3px;">Deadline: 2026/07/31</div>
+            </div>
+
+            <div class="history-record">
+                <span>最高连续时间</span>
+                <span class="history-val"><span id="maxStreak">0</span> 天</span>
+            </div>
+
+            <div class="backup-buttons">
+                <button class="btn-small" onclick="exportSave()">💾 导出备份</button>
+                <button class="btn-small" onclick="importSave()">📂 导入存档</button>
+            </div>
         </div>
     </aside>
 
     <main class="content">
-        <div id="todayStatus" style="text-align: right; color: #666; font-size: 0.85rem; margin-bottom: 5px;">系统状态：在线</div>
+        <div id="todayStatus" style="text-align: right; color: #666; font-size: 0.85rem; margin-bottom: 5px;">环境监控中...</div>
         <div id="core-tasks"></div>
         <div id="side-tasks"></div>
         <button class="btn-submit" id="submitBtn" onclick="submitDay()">⚡ 结算今日副本</button>
@@ -212,10 +236,11 @@
         { id: 'talk', name: '共鸣共振', desc: '即兴演讲或深度社交', pts: 8 }
     ];
 
-    // 初始化 state，包含弹性豁免逻辑
-    let state = JSON.parse(localStorage.getItem('drainage_rpg_v37')) || { 
+    // 初始化 state，包含历史最高纪录
+    let state = JSON.parse(localStorage.getItem('drainage_rpg_v39')) || { 
         xp: 0, 
         streak: 0, 
+        maxStreak: 0, // 新增：最高连胜纪录
         coins: 0, 
         lastDate: "",
         missedDays: 0 
@@ -228,18 +253,18 @@
         document.addEventListener("visibilitychange", () => { if (document.visibilityState === 'visible') { refreshUI(); updateCountdown(); } });
     }
 
-    // 倒计时核心函数
     function updateCountdown() {
         const targetDate = new Date("2026-07-31T00:00:00");
         const now = new Date();
         const diff = targetDate - now;
+        const countDisplay = document.getElementById('thesisCountdown');
         
         if (diff > 0) {
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            document.getElementById('thesisCountdown').innerText = `${days} 天`;
+            countDisplay.innerText = `${days} 天`;
         } else {
-            document.getElementById('thesisCountdown').innerText = "已到期";
-            document.getElementById('thesisCountdown').style.color = "var(--warning)";
+            countDisplay.innerText = "已到期";
+            countDisplay.style.color = "var(--warning)";
         }
     }
 
@@ -262,17 +287,21 @@
     function refreshUI() {
         document.getElementById('totalXP').innerText = state.xp;
         document.getElementById('streak').innerText = state.streak;
+        document.getElementById('maxStreak').innerText = state.maxStreak || 0;
         document.getElementById('coins').innerText = state.coins;
+
         const level = Math.floor(state.xp / 600) + 1;
         const baseStat = 10 + (level - 1) * 5;
         const streakBuff = Math.floor(state.streak / 7) * 3;
         const titles = ["见习学者", "研究助理", "特聘研究员", "高级专家", "领航博导"];
         document.getElementById('playerLevel').innerText = `LV.${level} ${titles[Math.min(level-1, 4)]}`;
+        
         ['INT', 'CON', 'PER', 'CHA'].forEach(s => { document.getElementById(`stat${s}`).innerText = baseStat + streakBuff; });
+        
         if (state.lastDate === new Date().toDateString()) {
-            document.getElementById('todayStatus').innerText = "✅ 今日副本已封存";
+            document.getElementById('todayStatus').innerText = "✅ 能量场已封存";
             const btn = document.getElementById('submitBtn');
-            btn.disabled = true; btn.style.opacity = "0.5"; btn.innerText = "结算已完成";
+            btn.disabled = true; btn.style.opacity = "0.5"; btn.innerText = "副本已通关";
         }
     }
 
@@ -282,37 +311,49 @@
         document.querySelectorAll('.s-check').forEach(i => { if(i.checked) { dailyXP += parseInt(i.dataset.pts); sideCount++; } });
         
         if (coreDone && sideCount >= 3) {
-            state.xp += dailyXP; state.streak++; state.missedDays = 0;
-            if(state.streak % 7 === 0) { state.coins++; alert("✨ 触发连胜神迹！复活币 +1"); }
+            state.xp += dailyXP; 
+            state.streak++;
+            state.missedDays = 0;
+            
+            // 更新最高纪录逻辑
+            if (state.streak > (state.maxStreak || 0)) {
+                state.maxStreak = state.streak;
+            }
+
+            if(state.streak % 7 === 0) { state.coins++; alert("✨ 连胜神迹！复活币 +1"); }
             alert(`结算成功！连胜记录：${state.streak} 天`);
         } else {
             if (state.missedDays < 1) {
                 state.missedDays++; state.xp += dailyXP;
-                alert("⚠️ 触发‘博士的弹性豁免’，连胜已保住！");
-            } else if (state.coins > 0 && confirm("⚠️ 已耗尽豁免权！是否消耗复活币保住连胜？")) {
+                alert("⚠️ 触发‘博士弹性豁免’，连胜暂存！");
+            } else if (state.coins > 0 && confirm("⚠️ 豁免已耗尽！是否消耗复活币保住天数？")) {
                 state.coins--; state.xp += dailyXP; state.missedDays = 0;
             } else {
                 state.streak = 0; state.xp += dailyXP; state.missedDays = 0;
-                alert("💔 连胜中断。");
+                alert("💔 连胜中断。调整状态，重新挑战！");
             }
         }
         state.lastDate = new Date().toDateString();
-        localStorage.setItem('drainage_rpg_v37', JSON.stringify(state));
+        localStorage.setItem('drainage_rpg_v39', JSON.stringify(state));
         location.reload();
     }
 
     function exportSave() {
         const dataStr = btoa(JSON.stringify(state));
-        navigator.clipboard.writeText(dataStr).then(() => alert("存档已复制！"));
+        navigator.clipboard.writeText(dataStr).then(() => alert("存档已克隆至剪贴板。"));
     }
 
     function importSave() {
-        const code = prompt("粘贴存档代码：");
+        const code = prompt("接入存档代码：");
         if (code) {
             try {
                 const decoded = JSON.parse(atob(code));
-                if (decoded.xp !== undefined) { state = decoded; localStorage.setItem('drainage_rpg_v37', JSON.stringify(state)); location.reload(); }
-            } catch (e) { alert("失败！"); }
+                if (decoded.xp !== undefined) { 
+                    state = decoded; 
+                    localStorage.setItem('drainage_rpg_v39', JSON.stringify(state)); 
+                    location.reload(); 
+                }
+            } catch (e) { alert("解析失败。"); }
         }
     }
     window.onload = init;

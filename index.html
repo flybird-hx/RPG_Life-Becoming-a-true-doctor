@@ -211,7 +211,7 @@
         document.getElementById('totalXP').innerText = state.xp;
         document.getElementById('streak').innerText = state.streak;
         document.getElementById('maxStreak').innerText = state.maxStreak || 0;
-        const level = Math.floor(state.xp / 600) + 1;
+        const level = Math.floor(state.xp / 5000) + 1;
         document.getElementById('playerLevel').innerText = `LV.${level} ${["见习学者", "研究助理", "特聘研究员", "高级专家", "领航博导"][Math.min(level-1, 4)]}`;
         ['INT', 'CON', 'PER', 'CHA'].forEach(s => { document.getElementById(`stat${s}`).innerText = 10 + (level-1)*5 + Math.floor(state.streak/7)*3; });
         if (state.lastDate === new Date().toDateString()) {

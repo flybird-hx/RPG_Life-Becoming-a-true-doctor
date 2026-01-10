@@ -95,4 +95,151 @@
         .task-pts-display { font-size: 1.1rem; font-weight: bold; color: var(--success); margin: 0 20px; min-width: 45px; text-align: right; }
         input[type="checkbox"] { width: 36px; height: 36px; cursor: pointer; accent-color: var(--primary); }
 
-        .btn-submit { background: linear-gradient(45deg, var(--secondary), var(--primary)); border: none; color: white; padding: 25
+        .btn-submit { background: linear-gradient(45deg, var(--secondary), var(--primary)); border: none; color: white; padding: 25px; border-radius: 20px; font-size: 1.5rem; font-weight: bold; margin: 20px 0; cursor: pointer; box-shadow: 0 12px 30px rgba(112, 0, 255, 0.5); transition: transform 0.2s; }
+        .btn-submit:active { transform: scale(0.97); }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <aside class="sidebar">
+        <div class="avatar-container">
+            <img src="https://i.postimg.cc/MT9kh86S/a1a30743-40ee-4b63-8e15-d12c8ecff56e.png" class="avatar-img">
+            <div class="player-name">Dr. HuXiao</div>
+            <div class="level-badge" id="playerLevel">LV.1 见习学者</div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-box"><div class="stat-label">智力 INT</div><div class="stat-value" id="statINT" style="color:var(--int-color)">10</div></div>
+            <div class="stat-box"><div class="stat-label">体质 CON</div><div class="stat-value" id="statCON" style="color:var(--con-color)">10</div></div>
+            <div class="stat-box"><div class="stat-label">感知 PER</div><div class="stat-value" id="statPER" style="color:var(--per-color)">10</div></div>
+            <div class="stat-box"><div class="stat-label">魅力 CHA</div><div class="stat-value" id="statCHA" style="color:var(--cha-color)">10</div></div>
+        </div>
+
+        <div class="achievement-grid">
+            <div class="ach-card"><span class="ach-label">累计经验</span><span id="totalXP" class="ach-val">0</span></div>
+            <div class="ach-card"><span class="ach-label">当前全勤</span><span id="streak" class="ach-val">0</span></div>
+        </div>
+
+        <div class="reward-zone">
+            <div class="reward-header"><span>🎁 成就奖励清单</span><span id="nextGoal">目标: 500</span></div>
+            <div class="progress-bar-bg"><div id="rewardProgress" class="progress-bar-fill"></div></div>
+            <div id="rewardList"></div>
+        </div>
+
+        <div class="cd-zone">
+            <div style="font-size: 0.75rem; color: var(--warning); font-weight: bold; text-transform: uppercase;">毕业论文提交倒计时</div>
+            <div id="thesisCountdown" style="font-size: 1.8rem; font-weight: bold; margin: 4px 0;">---</div>
+        </div>
+
+        <div class="ms-card">
+            <div style="font-size: 0.75rem; color: var(--gold); font-weight: bold;">🏆 最高连续天数纪录</div>
+            <div class="ms-val-big"><span id="maxStreak">0</span><small style="font-size: 1rem;"> 天</small></div>
+        </div>
+
+        <div class="backup-zone">
+            <button class="btn-small" onclick="exportSave()">导出备份</button>
+            <button class="btn-small" onclick="importSave()">导入存档</button>
+        </div>
+    </aside>
+
+    <main class="content">
+        <div id="todayStatus" style="text-align: right; color: #666; font-size: 0.9rem; margin-bottom: 8px;">系统已连接，胡博士</div>
+        <div id="core-tasks"></div>
+        <div id="side-tasks"></div>
+        <button class="btn-submit" id="submitBtn" onclick="submitDay()">⚡ 结算今日副本</button>
+    </main>
+</div>
+
+<script>
+    const coreTasks = [
+        { id: 'sci', name: 'SCI 论文攻坚', desc: '撰写≥2h 或 章节重大更新', pts: 30 },
+        { id: 'cfd', name: '数值模拟分析', desc: 'Fluent/VOF 数据处理或模型优化', pts: 20 },
+        { id: 'patent', name: '专利撰写', desc: '权利要求书或核心创新点细化', pts: 10 }
+    ];
+    const sideTasks = [
+        { id: 'stairs', name: '纵向位移', desc: '爬楼梯≥20层', pts: 10 },
+        { id: 'core', name: '核心加固', desc: '平板支撑/端腹', pts: 10 },
+        { id: 'read', name: '灵感捕手', desc: '书籍阅读+随笔', pts: 6 },
+        { id: 'color', name: '视界重构', desc: '构图/色彩练习', pts: 6 },
+        { id: 'talk', name: '共鸣共振', desc: '即兴演讲或深度社交', pts: 8 }
+    ];
+
+    // 已更新奖励目标
+    const rewardMilestones = [
+        { xp: 500, name: "半天外出放松", icon: "🌳" },
+        { xp: 1500, name: "一份冰激凌/甜品", icon: "🍦" },
+        { xp: 3000, name: "一顿美食奖励", icon: "🍖" },
+        { xp: 6000, name: "一个手办奖励", icon: "🧩" },
+        { xp: 10000, name: "1000元购物金", icon: "🧧" }
+    ];
+
+    let state = JSON.parse(localStorage.getItem('drainage_rpg_v39')) || { 
+        xp: 0, streak: 0, maxStreak: 0, coins: 0, lastDate: "", missedDays: 0 
+    };
+
+    function init() {
+        renderTasks(); refreshUI(); updateCountdown(); renderRewards();
+        document.addEventListener("visibilitychange", () => { if (document.visibilityState === 'visible') { refreshUI(); updateCountdown(); } });
+    }
+
+    function renderTasks() {
+        document.getElementById('core-tasks').innerHTML = '<div class="section-title">⚔️ 核心学术副本</div>' + 
+            coreTasks.map(t => `<div class="task-card"><div class="task-info"><b>${t.name}</b><br><small>${t.desc}</small></div><div class="task-pts-display">+${t.pts}</div><input type="checkbox" class="c-check" data-pts="${t.pts}"></div>`).join('');
+        document.getElementById('side-tasks').innerHTML = '<div class="section-title">🛠️ 自我提升副本</div>' + 
+            sideTasks.map(t => `<div class="task-card" style="border-left-color:var(--primary)"><div class="task-info"><b>${t.name}</b><br><small>${t.desc}</small></div><div class="task-pts-display" style="color:var(--primary)">+${t.pts}</div><input type="checkbox" class="s-check" data-pts="${t.pts}"></div>`).join('');
+    }
+
+    function renderRewards() {
+        const list = document.getElementById('rewardList');
+        list.innerHTML = rewardMilestones.map(m => `
+            <div class="reward-item ${state.xp >= m.xp ? 'unlocked' : ''}">
+                <i>${state.xp >= m.xp ? '✅' : '🔒'}</i>
+                <span><b>${m.xp} XP:</b> ${m.name}</span>
+            </div>`).join('');
+        const next = rewardMilestones.find(m => m.xp > state.xp) || rewardMilestones[rewardMilestones.length-1];
+        document.getElementById('nextGoal').innerText = `目标: ${next.xp}`;
+        document.getElementById('rewardProgress').style.width = Math.min((state.xp / next.xp) * 100, 100) + '%';
+    }
+
+    function updateCountdown() {
+        const diff = new Date("2026-07-31T00:00:00") - new Date();
+        document.getElementById('thesisCountdown').innerText = diff > 0 ? `${Math.floor(diff / (1000*60*60*24))} 天` : "已到期";
+    }
+
+    function refreshUI() {
+        document.getElementById('totalXP').innerText = state.xp;
+        document.getElementById('streak').innerText = state.streak;
+        document.getElementById('maxStreak').innerText = state.maxStreak || 0;
+        const level = Math.floor(state.xp / 600) + 1;
+        document.getElementById('playerLevel').innerText = `LV.${level} ${["见习学者", "研究助理", "特聘研究员", "高级专家", "领航博导"][Math.min(level-1, 4)]}`;
+        ['INT', 'CON', 'PER', 'CHA'].forEach(s => { document.getElementById(`stat${s}`).innerText = 10 + (level-1)*5 + Math.floor(state.streak/7)*3; });
+        if (state.lastDate === new Date().toDateString()) {
+            const btn = document.getElementById('submitBtn'); btn.disabled = true; btn.style.opacity = "0.5"; btn.innerText = "今日结算已完成";
+        }
+    }
+
+    function submitDay() {
+        let dailyXP = 0, coreDone = true, sideCount = 0;
+        document.querySelectorAll('.c-check').forEach(i => { if(i.checked) dailyXP += parseInt(i.dataset.pts); else coreDone = false; });
+        document.querySelectorAll('.s-check').forEach(i => { if(i.checked) { dailyXP += parseInt(i.dataset.pts); sideCount++; } });
+        if (coreDone && sideCount >= 3) {
+            state.xp += dailyXP; state.streak++; state.missedDays = 0;
+            if (state.streak > (state.maxStreak || 0)) state.maxStreak = state.streak;
+            if(state.streak % 7 === 0) { state.coins++; alert("✨ 触发连胜神迹！复活币 +1"); }
+        } else {
+            if (state.missedDays < 1) { state.missedDays++; state.xp += dailyXP; alert("⚠️ 触发‘博士弹性豁免’！"); }
+            else if (state.coins > 0 && confirm("使用复活币？")) { state.coins--; state.xp += dailyXP; state.missedDays = 0; }
+            else { state.streak = 0; state.xp += dailyXP; state.missedDays = 0; }
+        }
+        state.lastDate = new Date().toDateString();
+        localStorage.setItem('drainage_rpg_v39', JSON.stringify(state));
+        location.reload();
+    }
+
+    function exportSave() { navigator.clipboard.writeText(btoa(JSON.stringify(state))).then(() => alert("存档已复制。")); }
+    function importSave() { const code = prompt("接入存档代码："); if (code) { try { state = JSON.parse(atob(code)); localStorage.setItem('drainage_rpg_v39', JSON.stringify(state)); location.reload(); } catch (e) { alert("失败。"); } } }
+    window.onload = init;
+</script>
+</body>
+</html>

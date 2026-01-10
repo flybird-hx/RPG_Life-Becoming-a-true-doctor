@@ -41,7 +41,7 @@
         }
 
         .sidebar {
-            flex: 0 0 320px; background: var(--sidebar-bg); border-radius: 24px;
+            flex: 0 0 340px; background: var(--sidebar-bg); border-radius: 24px;
             padding: 20px; border: 2px solid var(--secondary);
             box-shadow: 0 0 25px rgba(112, 0, 255, 0.25);
             display: flex; flex-direction: column; overflow-y: auto;
@@ -56,201 +56,43 @@
             .content { overflow-y: visible; }
         }
 
-        /* 基础组件 */
-        .avatar-img { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--primary); box-shadow: 0 0 15px var(--primary); display: block; margin: 0 auto; }
-        .player-name { font-size: 1.1rem; font-weight: bold; text-align: center; margin-top: 10px; color: var(--primary); }
-        .level-badge { background: linear-gradient(45deg, var(--secondary), var(--primary)); color: white; padding: 4px 12px; border-radius: 15px; font-size: 0.75rem; font-weight: bold; display: block; margin: 8px auto; text-align: center; width: fit-content; }
+        /* --- 侧边栏字体放大优化 --- */
+        .avatar-img { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary); box-shadow: 0 0 15px var(--primary); display: block; margin: 0 auto; }
+        .player-name { font-size: 1.5rem; font-weight: bold; text-align: center; margin-top: 12px; color: var(--primary); }
+        .level-badge { background: linear-gradient(45deg, var(--secondary), var(--primary)); color: white; padding: 6px 16px; border-radius: 15px; font-size: 0.9rem; font-weight: bold; display: block; margin: 10px auto; text-align: center; width: fit-content; }
 
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-        .stat-box { background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; text-align: center; border: 1px solid #222; }
-        .stat-label { font-size: 0.55rem; color: #888; }
-        .stat-value { font-size: 0.9rem; font-weight: bold; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .stat-box { background: rgba(0,0,0,0.3); padding: 12px; border-radius: 12px; text-align: center; border: 1px solid #333; }
+        .stat-label { font-size: 0.7rem; color: #888; font-weight: bold; }
+        .stat-value { font-size: 1.4rem; font-weight: bold; } /* 属性数字变大 */
 
-        .ach-card { background: rgba(255,255,255,0.03); border: 1px solid #333; border-radius: 10px; padding: 10px; display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
-        .ach-label { font-size: 0.65rem; color: #888; }
-        .ach-val { font-size: 0.9rem; font-weight: bold; color: var(--primary); }
+        .ach-card { background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 12px; padding: 12px; display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+        .ach-label { font-size: 0.8rem; color: #aaa; }
+        .ach-val { font-size: 1.2rem; font-weight: bold; color: var(--primary); } /* 经验数字变大 */
 
-        /* 奖励机制 UI */
-        .reward-zone { margin-top: 15px; padding: 12px; background: rgba(57, 255, 20, 0.05); border: 1px dashed rgba(57, 255, 20, 0.3); border-radius: 15px; }
-        .reward-header { display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--success); font-weight: bold; margin-bottom: 8px; }
-        .progress-bar-bg { width: 100%; height: 6px; background: #222; border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
-        .progress-bar-fill { height: 100%; background: var(--success); width: 0%; transition: width 0.5s; box-shadow: 0 0 10px var(--success); }
-        .reward-item { display: flex; align-items: center; gap: 8px; font-size: 0.7rem; margin-bottom: 6px; color: #777; transition: color 0.3s; }
+        /* 奖励里程碑模块 */
+        .reward-zone { margin-top: 18px; padding: 15px; background: rgba(57, 255, 20, 0.05); border: 1px dashed rgba(57, 255, 20, 0.4); border-radius: 15px; }
+        .reward-header { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--success); font-weight: bold; margin-bottom: 10px; }
+        .progress-bar-bg { width: 100%; height: 8px; background: #222; border-radius: 10px; overflow: hidden; margin-bottom: 12px; }
+        .progress-bar-fill { height: 100%; background: var(--success); width: 0%; transition: width 0.5s; box-shadow: 0 0 12px var(--success); }
+        .reward-item { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; margin-bottom: 8px; color: #666; transition: color 0.3s; }
         .reward-item.unlocked { color: var(--gold); font-weight: bold; }
 
-        /* 倒计时与纪录 */
-        .cd-zone { margin-top: 12px; background: rgba(255, 71, 87, 0.08); border: 1px solid rgba(255, 71, 87, 0.2); border-radius: 12px; padding: 10px; text-align: center; }
-        .ms-card { margin-top: 8px; background: rgba(255,215,0,0.05); border: 1px solid rgba(255,215,0,0.1); border-radius: 12px; padding: 10px; text-align: center; }
+        /* 倒计时与最高纪录放大 */
+        .cd-zone { margin-top: 15px; background: rgba(255, 71, 87, 0.1); border: 1px solid rgba(255, 71, 87, 0.3); border-radius: 15px; padding: 12px; text-align: center; }
+        .ms-card { margin-top: 10px; background: rgba(255,215,0,0.08); border: 1px solid rgba(255,215,0,0.2); border-radius: 15px; padding: 12px; text-align: center; }
+        .ms-val-big { font-size: 2.2rem; font-weight: bold; color: var(--gold); text-shadow: 0 0 15px rgba(255,215,0,0.4); }
 
-        .backup-zone { margin-top: auto; padding-top: 15px; display: flex; gap: 8px; }
-        .btn-small { flex: 1; background: #1a1a1a; border: 1px solid #333; color: #555; padding: 8px; border-radius: 8px; font-size: 0.6rem; cursor: pointer; }
+        .backup-zone { margin-top: auto; padding-top: 15px; display: flex; gap: 10px; }
+        .btn-small { flex: 1; background: #1a1a1a; border: 1px solid #333; color: #777; padding: 10px; border-radius: 10px; font-size: 0.7rem; cursor: pointer; }
 
-        /* 任务区增强 */
-        .section-title { color: var(--gold); font-size: 1.1rem; margin: 20px 0 10px; border-left: 4px solid var(--gold); padding-left: 10px; }
-        .task-card { background: var(--card-bg); border-radius: 16px; padding: 18px; margin-bottom: 12px; display: flex; align-items: center; border-left: 5px solid var(--secondary); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        /* 任务区大字体优化 */
+        .section-title { color: var(--gold); font-size: 1.3rem; margin: 25px 0 15px; border-left: 5px solid var(--gold); padding-left: 12px; font-weight: bold; }
+        .task-card { background: var(--card-bg); border-radius: 18px; padding: 22px; margin-bottom: 15px; display: flex; align-items: center; border-left: 6px solid var(--secondary); box-shadow: 0 6px 15px rgba(0,0,0,0.3); }
         .task-info { flex: 1; }
-        .task-name { font-weight: bold; font-size: 1.05rem; }
-        .task-desc { font-size: 0.85rem; color: #aaa; margin-top: 4px; }
-        
-        /* 任务经验值样式 */
-        .task-pts-display { font-size: 0.9rem; font-weight: bold; color: var(--success); margin: 0 15px; min-width: 35px; text-align: right; }
-        
-        input[type="checkbox"] { width: 32px; height: 32px; cursor: pointer; accent-color: var(--primary); }
+        .task-name { font-weight: bold; font-size: 1.2rem; } /* 任务名变大 */
+        .task-desc { font-size: 0.95rem; color: #aaa; margin-top: 6px; }
+        .task-pts-display { font-size: 1.1rem; font-weight: bold; color: var(--success); margin: 0 20px; min-width: 45px; text-align: right; }
+        input[type="checkbox"] { width: 36px; height: 36px; cursor: pointer; accent-color: var(--primary); }
 
-        .btn-submit { background: linear-gradient(45deg, var(--secondary), var(--primary)); border: none; color: white; padding: 22px; border-radius: 16px; font-size: 1.25rem; font-weight: bold; margin: 20px 0; cursor: pointer; box-shadow: 0 10px 25px rgba(112, 0, 255, 0.4); }
-    </style>
-</head>
-<body>
-
-<div class="main-container">
-    <aside class="sidebar">
-        <div class="avatar-container">
-            <img src="https://i.postimg.cc/MT9kh86S/a1a30743-40ee-4b63-8e15-d12c8ecff56e.png" class="avatar-img">
-            <div class="player-name">Dr. HuXiao</div>
-            <div class="level-badge" id="playerLevel">LV.1 见习学者</div>
-        </div>
-        
-        <div class="stats-grid">
-            <div class="stat-box"><div class="stat-label">智力 INT</div><div class="stat-value" id="statINT">10</div></div>
-            <div class="stat-box"><div class="stat-label">体质 CON</div><div class="stat-value" id="statCON">10</div></div>
-            <div class="stat-box"><div class="stat-label">感知 PER</div><div class="stat-value" id="statPER">10</div></div>
-            <div class="stat-box"><div class="stat-label">魅力 CHA</div><div class="stat-value" id="statCHA">10</div></div>
-        </div>
-
-        <div class="achievement-grid">
-            <div class="ach-card"><span class="ach-label">累计经验</span><span id="totalXP" class="ach-val">0</span></div>
-            <div class="ach-card"><span class="ach-label">当前全勤</span><span id="streak" class="ach-val">0</span></div>
-        </div>
-
-        <div class="reward-zone">
-            <div class="reward-header"><span>🎁 奖励里程碑</span><span id="nextGoal">目标: 500</span></div>
-            <div class="progress-bar-bg"><div id="rewardProgress" class="progress-bar-fill"></div></div>
-            <div id="rewardList"></div>
-        </div>
-
-        <div class="cd-zone">
-            <div style="font-size: 0.6rem; color: var(--warning); font-weight: bold;">毕业论文提交倒计时</div>
-            <div id="thesisCountdown" style="font-size: 1.4rem; font-weight: bold; margin: 2px 0;">---</div>
-        </div>
-
-        <div class="ms-card">
-            <div style="font-size: 0.6rem; color: var(--gold);">🏆 最高连续天数</div>
-            <div style="font-size: 1.6rem; font-weight: bold; color: var(--gold);"><span id="maxStreak">0</span><small style="font-size: 0.7rem;"> Days</small></div>
-        </div>
-
-        <div class="backup-zone">
-            <button class="btn-small" onclick="exportSave()">导出</button>
-            <button class="btn-small" onclick="importSave()">导入</button>
-        </div>
-    </aside>
-
-    <main class="content">
-        <div id="todayStatus" style="text-align: right; color: #666; font-size: 0.8rem; margin-bottom: 5px;">实验室环境就绪</div>
-        <div id="core-tasks"></div>
-        <div id="side-tasks"></div>
-        <button class="btn-submit" id="submitBtn" onclick="submitDay()">⚡ 结算今日副本</button>
-    </main>
-</div>
-
-<script>
-    const coreTasks = [
-        { id: 'sci', name: 'SCI 论文攻坚', desc: '撰写≥2h 或 章节重大更新', pts: 30 },
-        { id: 'cfd', name: '数值模拟分析', desc: 'Fluent/VOF 数据处理或模型优化', pts: 20 },
-        { id: 'patent', name: '专利撰写', desc: '权利要求书或核心创新点细化', pts: 10 }
-    ];
-    const sideTasks = [
-        { id: 'stairs', name: '纵向位移', desc: '爬楼梯≥20层', pts: 10 },
-        { id: 'core', name: '核心加固', desc: '平板支撑/端腹', pts: 10 },
-        { id: 'read', name: '灵感捕手', desc: '书籍阅读+随笔', pts: 6 },
-        { id: 'color', name: '视界重构', desc: '构图/色彩练习', pts: 6 },
-        { id: 'talk', name: '共鸣共振', desc: '即兴演讲或深度社交', pts: 8 }
-    ];
-    const rewardMilestones = [
-        { xp: 500, name: "一份精致甜品/下午茶", icon: "🍰" },
-        { xp: 1500, name: "新款外设/科研辅助工具", icon: "⌨️" },
-        { xp: 3000, name: "周末星级餐厅激励", icon: "🍣" },
-        { xp: 6000, name: "短途放松旅行基金", icon: "✈️" },
-        { xp: 10000, name: "毕业终极庆典大礼", icon: "🎓" }
-    ];
-
-    let state = JSON.parse(localStorage.getItem('drainage_rpg_v39')) || { 
-        xp: 0, streak: 0, maxStreak: 0, coins: 0, lastDate: "", missedDays: 0 
-    };
-
-    function init() {
-        renderTasks(); refreshUI(); updateCountdown(); renderRewards();
-        document.addEventListener("visibilitychange", () => { if (document.visibilityState === 'visible') { refreshUI(); updateCountdown(); } });
-    }
-
-    // 重点：在渲染函数中加入 pts 显示
-    function renderTasks() {
-        document.getElementById('core-tasks').innerHTML = '<div class="section-title">⚔️ 核心学术副本</div>' + 
-            coreTasks.map(t => `
-            <div class="task-card">
-                <div class="task-info"><b>${t.name}</b><br><small>${t.desc}</small></div>
-                <div class="task-pts-display">+${t.pts}</div>
-                <input type="checkbox" class="c-check" data-pts="${t.pts}">
-            </div>`).join('');
-        
-        document.getElementById('side-tasks').innerHTML = '<div class="section-title">🛠️ 自我提升副本</div>' + 
-            sideTasks.map(t => `
-            <div class="task-card" style="border-left-color:var(--primary)">
-                <div class="task-info"><b>${t.name}</b><br><small>${t.desc}</small></div>
-                <div class="task-pts-display" style="color:var(--primary)">+${t.pts}</div>
-                <input type="checkbox" class="s-check" data-pts="${t.pts}">
-            </div>`).join('');
-    }
-
-    function renderRewards() {
-        const list = document.getElementById('rewardList');
-        list.innerHTML = rewardMilestones.map(m => `
-            <div class="reward-item ${state.xp >= m.xp ? 'unlocked' : ''}">
-                <i>${state.xp >= m.xp ? '✅' : '🔒'}</i>
-                <span>${m.xp} XP: ${m.name}</span>
-            </div>`).join('');
-        const next = rewardMilestones.find(m => m.xp > state.xp) || rewardMilestones[rewardMilestones.length-1];
-        document.getElementById('nextGoal').innerText = `目标: ${next.xp}`;
-        document.getElementById('rewardProgress').style.width = Math.min((state.xp / next.xp) * 100, 100) + '%';
-    }
-
-    function updateCountdown() {
-        const diff = new Date("2026-07-31T00:00:00") - new Date();
-        document.getElementById('thesisCountdown').innerText = diff > 0 ? `${Math.floor(diff / (1000*60*60*24))} 天` : "已到期";
-    }
-
-    function refreshUI() {
-        document.getElementById('totalXP').innerText = state.xp;
-        document.getElementById('streak').innerText = state.streak;
-        document.getElementById('maxStreak').innerText = state.maxStreak || 0;
-        const level = Math.floor(state.xp / 600) + 1;
-        document.getElementById('playerLevel').innerText = `LV.${level} ${["见习学者", "研究助理", "特聘研究员", "高级专家", "领航博导"][Math.min(level-1, 4)]}`;
-        ['INT', 'CON', 'PER', 'CHA'].forEach(s => { document.getElementById(`stat${s}`).innerText = 10 + (level-1)*5 + Math.floor(state.streak/7)*3; });
-        if (state.lastDate === new Date().toDateString()) {
-            const btn = document.getElementById('submitBtn'); btn.disabled = true; btn.style.opacity = "0.5"; btn.innerText = "结算已完成";
-        }
-    }
-
-    function submitDay() {
-        let dailyXP = 0, coreDone = true, sideCount = 0;
-        document.querySelectorAll('.c-check').forEach(i => { if(i.checked) dailyXP += parseInt(i.dataset.pts); else coreDone = false; });
-        document.querySelectorAll('.s-check').forEach(i => { if(i.checked) { dailyXP += parseInt(i.dataset.pts); sideCount++; } });
-        if (coreDone && sideCount >= 3) {
-            state.xp += dailyXP; state.streak++; state.missedDays = 0;
-            if (state.streak > (state.maxStreak || 0)) state.maxStreak = state.streak;
-            if(state.streak % 7 === 0) { state.coins++; alert("✨ 触发连胜神迹！复活币 +1"); }
-        } else {
-            if (state.missedDays < 1) { state.missedDays++; state.xp += dailyXP; alert("⚠️ 触发‘博士弹性豁免’！"); }
-            else if (state.coins > 0 && confirm("消耗复活币？")) { state.coins--; state.xp += dailyXP; state.missedDays = 0; }
-            else { state.streak = 0; state.xp += dailyXP; state.missedDays = 0; }
-        }
-        state.lastDate = new Date().toDateString();
-        localStorage.setItem('drainage_rpg_v39', JSON.stringify(state));
-        location.reload();
-    }
-
-    function exportSave() { navigator.clipboard.writeText(btoa(JSON.stringify(state))).then(() => alert("存档已复制。")); }
-    function importSave() { const code = prompt("接入存档代码："); if (code) { try { state = JSON.parse(atob(code)); localStorage.setItem('drainage_rpg_v39', JSON.stringify(state)); location.reload(); } catch (e) { alert("失败。"); } } }
-    window.onload = init;
-</script>
-</body>
-</html>
+        .btn-submit { background: linear-gradient(45deg, var(--secondary), var(--primary)); border: none; color: white; padding: 25

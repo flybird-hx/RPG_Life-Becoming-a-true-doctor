@@ -60,12 +60,11 @@
         .ach-label { font-size: 0.85rem; color: #aaa; }
         .ach-val { font-size: 1.3rem; font-weight: bold; color: var(--primary); }
 
-        /* 循环奖励模块 */
         .reward-zone { margin-top: 18px; padding: 15px; background: rgba(57, 255, 20, 0.05); border: 1px dashed rgba(57, 255, 20, 0.4); border-radius: 15px; }
-        .reward-header { font-size: 0.9rem; color: var(--success); font-weight: bold; margin-bottom: 12px; display: flex; justify-content: space-between; }
+        .reward-header { font-size: 0.95rem; color: var(--success); font-weight: bold; margin-bottom: 12px; }
         .reward-item { display: flex; justify-content: space-between; align-items: center; font-size: 1rem; margin-bottom: 10px; color: #666; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.02); }
         .reward-item.unlocked { color: var(--gold); background: rgba(255,215,0,0.05); font-weight: bold; }
-        .reward-count { background: var(--gold); color: #000; padding: 2px 10px; border-radius: 10px; font-size: 0.8rem; font-weight: bold; }
+        .reward-count { background: var(--gold); color: #000; padding: 2px 10px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; }
 
         .cd-zone { margin-top: 15px; background: rgba(255, 71, 87, 0.12); border: 1px solid rgba(255, 71, 87, 0.3); border-radius: 15px; padding: 15px; text-align: center; }
         .ms-card { margin-top: 10px; background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); border-radius: 15px; padding: 15px; text-align: center; }
@@ -73,138 +72,5 @@
         .backup-zone { margin-top: auto; padding-top: 15px; display: flex; gap: 10px; }
         .btn-small { flex: 1; background: #1a1a1a; border: 1px solid #333; color: #777; padding: 12px; border-radius: 10px; font-size: 0.8rem; cursor: pointer; }
 
-        /* 任务区大字体优化 */
         .section-title { color: var(--gold); font-size: 1.4rem; margin: 25px 0 15px; border-left: 6px solid var(--gold); padding-left: 15px; font-weight: bold; }
         .task-card { background: var(--card-bg); border-radius: 20px; padding: 25px; margin-bottom: 18px; display: flex; align-items: center; border-left: 8px solid var(--secondary); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
-        .task-info { flex: 1; }
-        .task-name { font-weight: bold; font-size: 1.3rem; }
-        .task-desc { font-size: 1rem; color: #aaa; margin-top: 8px; }
-        .task-pts-display { font-size: 1.3rem; font-weight: bold; color: var(--success); margin: 0 25px; min-width: 50px; text-align: right; }
-        input[type="checkbox"] { width: 42px; height: 42px; cursor: pointer; accent-color: var(--primary); }
-
-        .btn-submit { background: linear-gradient(45deg, var(--secondary), var(--primary)); border: none; color: white; padding: 28px; border-radius: 24px; font-size: 1.7rem; font-weight: bold; margin: 20px 0; cursor: pointer; box-shadow: 0 15px 35px rgba(112, 0, 255, 0.5); }
-    </style>
-</head>
-<body>
-
-<div class="main-container">
-    <aside class="sidebar">
-        <div class="avatar-container">
-            <img src="https://i.postimg.cc/MT9kh86S/a1a30743-40ee-4b63-8e15-d12c8ecff56e.png" class="avatar-img">
-            <div class="player-name">Dr. HuXiao</div>
-            <div class="level-badge" id="playerLevel">LV.1 迷雾拾荒者</div>
-        </div>
-        
-        <div class="stats-grid">
-            <div class="stat-box"><div class="stat-label">智力 INT</div><div class="stat-value" id="statINT" style="color:var(--int-color)">10</div></div>
-            <div class="stat-box"><div class="stat-label">体质 CON</div><div class="stat-value" id="statCON" style="color:var(--con-color)">10</div></div>
-            <div class="stat-box"><div class="stat-label">感知 PER</div><div class="stat-value" id="statPER" style="color:var(--per-color)">10</div></div>
-            <div class="stat-box"><div class="stat-label">魅力 CHA</div><div class="stat-value" id="statCHA" style="color:var(--cha-color)">10</div></div>
-        </div>
-
-        <div class="achievement-grid">
-            <div class="ach-card"><span class="ach-label">累计经验</span><span id="totalXP" class="ach-val">0</span></div>
-            <div class="ach-card"><span class="ach-label">连续天数</span><span id="streak" class="ach-val">0</span></div>
-        </div>
-
-        <div class="reward-zone">
-            <div class="reward-header"><span>🎁 奖励兑换清单</span><small id="nextGoal">目标: 3000</small></div>
-            <div id="rewardList"></div>
-        </div>
-
-        <div class="cd-zone">
-            <div style="font-size: 0.85rem; color: var(--warning); font-weight: bold;">毕业论文提交倒计时</div>
-            <div id="thesisCountdown" style="font-size: 2.2rem; font-weight: bold; margin: 5px 0;">---</div>
-            <div style="font-size: 0.65rem; color: #777;">Deadline: 2026/07/31</div>
-        </div>
-
-        <div class="ms-card">
-            <div style="font-size: 0.85rem; color: var(--gold); font-weight: bold;">🏆 最高连续全勤纪录</div>
-            <div style="font-size: 2.6rem; font-weight: bold; color: var(--gold);"><span id="maxStreak">0</span><small style="font-size: 1.2rem;"> 天</small></div>
-        </div>
-
-        <div class="backup-zone">
-            <button class="btn-small" onclick="exportSave()">备份</button>
-            <button class="btn-small" onclick="importSave()">导入</button>
-        </div>
-    </aside>
-
-    <main class="content">
-        <div id="todayStatus" style="text-align: right; color: #666; font-size: 1rem; margin-bottom: 10px;">博士觉醒中...</div>
-        <div id="core-tasks"></div>
-        <div id="side-tasks"></div>
-        <button class="btn-submit" id="submitBtn" onclick="submitDay()">⚡ 提交今日战果</button>
-    </main>
-</div>
-
-<script>
-    const coreTasks = [
-        { id: 'sci', name: 'SCI 论文攻坚', desc: '撰写≥2h 或 章节重大更新', pts: 30 },
-        { id: 'cfd', name: '数值模拟分析', desc: 'Fluent/VOF 数据处理或模型优化', pts: 20 },
-        { id: 'patent', name: '专利撰写', desc: '权利要求书或核心创新点细化', pts: 10 }
-    ];
-    const sideTasks = [
-        { id: 'stairs', name: '纵向位移', desc: '爬楼梯≥20层', pts: 10 },
-        { id: 'core', name: '核心加固', desc: '平板支撑/端腹', pts: 10 },
-        { id: 'read', name: '灵感捕手', desc: '书籍阅读+随笔', pts: 6 },
-        { id: 'color', name: '视界重构', desc: '构图/色彩练习', pts: 6 },
-        { id: 'talk', name: '共鸣共振', desc: '即兴演讲或深度社交', pts: 8 }
-    ];
-
-    const rewardSettings = [
-        { xp: 500, name: "半天外出放松", type: 'cycle', icon: "🌳" },
-        { xp: 1400, name: "一份冰激凌/甜品", type: 'cycle', icon: "🍦" },
-        { xp: 2800, name: "一顿美食奖励", type: 'cycle', icon: "🍖" },
-        { xp: 5600, name: "一个手办奖励", type: 'cycle', icon: "🧩" },
-        { xp: 8400, name: "1000元购物金", type: 'cycle', icon: "🧧" }
-    ];
-
-    // 使用原存档键名以继承进度
-    let state = JSON.parse(localStorage.getItem('drainage_rpg_v32')) || { 
-        xp: 0, streak: 0, maxStreak: 0, coins: 0, lastDate: "", missedDays: 0 
-    };
-
-    function init() {
-        renderTasks(); refreshUI(); updateCountdown(); renderRewards();
-        document.addEventListener("visibilitychange", () => { if (document.visibilityState === 'visible') { refreshUI(); updateCountdown(); } });
-    }
-
-    // 更新等级公式：3000 XP 一级
-    function refreshUI() {
-        document.getElementById('totalXP').innerText = state.xp;
-        document.getElementById('streak').innerText = state.streak;
-        document.getElementById('maxStreak').innerText = state.maxStreak || 0;
-        
-        const level = Math.floor(state.xp / 3000) + 1; // [重点修改]
-        const titles = ["迷雾拾荒者", "逻辑执旗手", "秩序炼金师", "真理守望者", "至臻·觉醒圣贤"];
-        document.getElementById('playerLevel').innerText = `LV.${level} ${titles[Math.min(level-1, 4)]}`;
-        
-        ['INT', 'CON', 'PER', 'CHA'].forEach(s => { 
-            document.getElementById(`stat${s}`).innerText = 10 + (level-1)*5 + Math.floor(state.streak/7)*3; 
-        });
-        
-        if (state.lastDate === new Date().toDateString()) {
-            const btn = document.getElementById('submitBtn'); btn.disabled = true; btn.style.opacity = "0.5"; btn.innerText = "今日结算已完成";
-        }
-    }
-
-    function renderRewards() {
-        const list = document.getElementById('rewardList');
-        list.innerHTML = rewardSettings.map(r => {
-            let statusText = "";
-            let isUnlocked = false;
-            if (r.type === 'cycle') {
-                const count = Math.floor(state.xp / r.xp);
-                isUnlocked = count > 0;
-                statusText = isUnlocked ? `<span class="reward-count">已获 ${count} 次</span>` : `<small>每 ${r.xp} XP</small>`;
-            } else {
-                isUnlocked = state.xp >= r.xp;
-                statusText = isUnlocked ? `<span class="reward-count">已达成</span>` : `<small>需 ${r.xp} XP</small>`;
-            }
-            return `<div class="reward-item ${isUnlocked ? 'unlocked' : ''}"><span>${r.icon} ${r.name}</span>${statusText}</div>`;
-        }).join('');
-    }
-
-    function updateCountdown() {
-        const diff = new Date("2026-07-31T00:00:00") - new Date();
-        document.getElementById('thesisCountdown').innerText = diff > 0 ? `${Math.floor(diff / (1000*60*60*24))} 天` : "已到

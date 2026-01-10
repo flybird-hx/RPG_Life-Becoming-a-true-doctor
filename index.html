@@ -32,12 +32,10 @@
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             margin: 0;
             padding: 0;
-            /* 解决 Safari 高度 bug 的关键 */
             height: 100svh;
             width: 100vw;
             display: flex;
             overflow: hidden;
-            /* 消除点击延迟 */
             touch-action: manipulation;
         }
 
@@ -48,12 +46,10 @@
             padding: 20px;
             box-sizing: border-box;
             gap: 25px;
-            /* 动态适配刘海和底栏 */
             padding-top: calc(env(safe-area-inset-top) + 15px);
             padding-bottom: calc(env(safe-area-inset-bottom) + 15px);
         }
 
-        /* 侧边栏 */
         .sidebar {
             flex: 0 0 320px;
             background: var(--sidebar-bg);
@@ -98,15 +94,30 @@
             width: fit-content; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        .achievement-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin: 15px 0; }
-        .ach-card { background: rgba(255,255,255,0.03); border: 1px solid #333; border-radius: 12px; padding: 12px; display: flex; justify-content: space-between; align-items: center; }
+        /* 属性网格：已调换至上方 */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; margin-bottom: 20px; }
+        .stat-box { background: rgba(0,0,0,0.2); padding: 12px; border-radius: 12px; text-align: center; border: 1px solid #222; }
+        .stat-label { font-size: 0.65rem; color: #888; text-transform: uppercase; }
+        .stat-value { font-size: 1.15rem; font-weight: bold; margin-top: 2px; }
+
+        /* 核心成就栏：已调换至下方 */
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .ach-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
         .ach-label { font-size: 0.75rem; color: #888; }
         .ach-val { font-size: 1.1rem; font-weight: bold; color: var(--primary); }
-
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
-        .stat-box { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 12px; text-align: center; border: 1px solid #222; }
-        .stat-label { font-size: 0.65rem; color: #888; text-transform: uppercase; }
-        .stat-value { font-size: 1.1rem; font-weight: bold; margin-top: 2px; }
 
         .section-title { color: var(--gold); font-size: 1.1rem; margin: 20px 0 15px; border-left: 4px solid var(--gold); padding-left: 10px; display: flex; align-items: center; justify-content: space-between;}
         .task-card { background: var(--card-bg); border-radius: 16px; padding: 18px; margin-bottom: 12px; display: flex; align-items: center; border-left: 5px solid var(--secondary); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
@@ -140,17 +151,17 @@
             <div class="level-badge" id="playerLevel">LV.1 见习学者</div>
         </div>
         
-        <div class="achievement-grid">
-            <div class="ach-card"><span class="ach-label">累计 XP</span><span id="totalXP" class="ach-val">0</span></div>
-            <div class="ach-card"><span class="ach-label">连续全勤</span><span id="streak" class="ach-val">0</span></div>
-            <div class="ach-card"><span class="ach-label">复活币</span><span id="coins" class="ach-val" style="color:var(--gold)">0</span></div>
-        </div>
-
         <div class="stats-grid">
             <div class="stat-box"><div class="stat-label">智力 INT</div><div class="stat-value" id="statINT" style="color:var(--int-color)">10</div></div>
             <div class="stat-box"><div class="stat-label">体质 CON</div><div class="stat-value" id="statCON" style="color:var(--con-color)">10</div></div>
             <div class="stat-box"><div class="stat-label">感知 PER</div><div class="stat-value" id="statPER" style="color:var(--per-color)">10</div></div>
             <div class="stat-box"><div class="stat-label">魅力 CHA</div><div class="stat-value" id="statCHA" style="color:var(--cha-color)">10</div></div>
+        </div>
+
+        <div class="achievement-grid">
+            <div class="ach-card"><span class="ach-label">累计 XP</span><span id="totalXP" class="ach-val">0</span></div>
+            <div class="ach-card"><span class="ach-label">连续全勤</span><span id="streak" class="ach-val">0</span></div>
+            <div class="ach-card"><span class="ach-label">复活币</span><span id="coins" class="ach-val" style="color:var(--gold)">0</span></div>
         </div>
 
         <div class="backup-zone">

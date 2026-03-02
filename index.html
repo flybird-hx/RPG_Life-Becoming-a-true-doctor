@@ -140,16 +140,15 @@
 
 <script>
     const coreTasks = [
-        { id: 'sci', name: 'SCI 论文攻坚', desc: '撰写≥2h 或 章节重大更新', pts: 30 },
-        { id: 'cfd', name: '数值模拟分析', desc: 'Fluent/VOF 数据处理或模型优化', pts: 20 },
-        { id: 'patent', name: '专利撰写', desc: '权利要求书或核心创新点细化', pts: 10 }
+        { id: 'sci', name: '⚗️ 真理熔炉·SCI 精锻', desc: '论文深度撰写 ≥2h，或完成章节级重构', pts: 30 },
+        { id: 'cfd', name: '🌀 混沌解析·数值模拟', desc: 'Fluent/VOF 建模、数据处理或湍流参数优化', pts: 20 },
+        { id: 'research', name: '📜 秘典铸造·科研精进', desc: '实验操作 / 专利权利要求撰写 / 毕业论文推进等科研事项', pts: 10 }
     ];
     const sideTasks = [
-        { id: 'stairs', name: '纵向位移', desc: '爬楼梯≥20层', pts: 10 },
-        { id: 'core', name: '核心加固', desc: '平板支撑/端腹', pts: 10 },
-        { id: 'read', name: '阅读打卡', desc: '书籍阅读+随笔', pts: 6 },
-        { id: 'color', name: '视界重构', desc: '构图/色彩练习', pts: 6 },
-        { id: 'talk', name: '共鸣共振', desc: '即兴演讲或深度社交', pts: 8 }
+        { id: 'physique', name: '🛡️ 躯体淬炼·体能强化', desc: '平板支撑 / 卷腹 / 俯卧撑 / 凯格尔 / 跑步，任选其一完成', pts: 10 },
+        { id: 'read', name: '📖 智识汲取·阅读打卡', desc: '书籍精读 + 思维随笔输出', pts: 6 },
+        { id: 'color', name: '🎨 视界重构·审美修炼', desc: '构图 / 色彩 / 视觉感知练习', pts: 6 },
+        { id: 'review', name: '🪞 灵魂对话·自我复盘', desc: '录制复盘视频，回顾当日得失，与内心深处对话', pts: 8 }
     ];
     const rewardSettings = [
         { xp: 500, name: "半天外出放松", type: 'cycle', icon: "🌳" },
@@ -235,7 +234,7 @@
     function exportSave() { 
         const str = btoa(unescape(encodeURIComponent(JSON.stringify(state))));
         navigator.clipboard.writeText(str).then(() => {
-            alert("📤 备份成功！\n代码已复制到剪贴板。\n请发送到微信，在另一台设备上‘导入’。");
+            alert("📤 备份成功！\n代码已复制到剪贴板。\n请发送到微信，在另一台设备上'导入'。");
         }); 
     }
     

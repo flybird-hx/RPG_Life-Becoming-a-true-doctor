@@ -10,6 +10,40 @@
     <link rel="apple-touch-icon" href="https://api.dicebear.com/7.x/pixel-art/svg?seed=DrainageDoctor">
 
     <style>
+        /* --- 新增：全屏加载遮罩样式 --- */
+        #page-loading-mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #0a0b1e;
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: #00f2ff;
+            font-size: 18px;
+            transition: opacity 0.3s ease;
+        }
+        #page-loading-mask.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(0, 242, 255, 0.2);
+            border-top-color: #00f2ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        /* --- 原有样式保持不变 --- */
         :root {
             --primary: #00f2ff; --secondary: #7000ff; --bg: #0a0b1e;
             --card-bg: #161b33; --sidebar-bg: #11152b; --text: #e0e0e0;
@@ -28,6 +62,13 @@
             display: flex; width: 100%; height: 100%; padding: 20px; box-sizing: border-box; gap: 25px;
             padding-top: calc(env(safe-area-inset-top) + 15px);
             padding-bottom: calc(env(safe-area-inset-bottom) + 15px);
+            /* 新增：初始隐藏主容器，避免分步渲染 */
+            opacity: 0; 
+            transition: opacity 0.3s ease;
+        }
+        /* 新增：页面就绪后显示主容器 */
+        .main-container.ready {
+            opacity: 1;
         }
 
         .sidebar {
@@ -87,10 +128,17 @@
 </head>
 <body>
 
-<div class="main-container">
+<!-- 新增：全屏加载遮罩 -->
+<div id="page-loading-mask">
+    <div class="loading-spinner"></div>
+    <div>系统正在初始化...</div>
+</div>
+
+<div class="main-container" id="mainContainer">
     <aside class="sidebar">
         <div class="avatar-container">
-            <img src="https://s41.ax1x.com/2026/03/02/peplfNq.jpg" class="avatar-img">
+            <!-- 修复：替换失效头像为稳定的DiceBear生成头像 -->
+            <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=DrainageDoctor&backgroundColor=0a0b1e" class="avatar-img" alt="Avatar">
             <div class="player-name">Dr. HuXiao</div>
             <div class="level-badge" id="playerLevel">LV.1 迷雾拾荒者</div>
         </div>
@@ -139,6 +187,7 @@
 </div>
 
 <script>
+    // 数据配置保持不变
     const coreTasks = [
         { id: 'sci', name: '⚗️ 真理熔炉·SCI 精锻', desc: '论文深度撰写 ≥2h，或完成章节级重构', pts: 30 },
         { id: 'cfd', name: '🌀 混沌解析·数值模拟', desc: 'Fluent/VOF 建模、数据处理或湍流参数优化', pts: 20 },
@@ -162,9 +211,31 @@
         xp: 0, streak: 0, maxStreak: 0, coins: 0, lastDate: "", missedDays: 0 
     };
 
+    // 核心修改：优化初始化逻辑
     function init() {
-        renderTasks(); refreshUI(); updateCountdown(); renderRewards();
-        document.addEventListener("visibilitychange", () => { if (document.visibilityState === 'visible') { refreshUI(); updateCountdown(); } });
+        // 1. 立即渲染任务列表（不要等图片等资源）
+        renderTasks(); 
+        // 2. 同步更新UI
+        refreshUI(); 
+        updateCountdown(); 
+        renderRewards();
+        
+        // 3. 显示页面内容，隐藏加载遮罩
+        const mainContainer = document.getElementById('mainContainer');
+        const loadingMask = document.getElementById('page-loading-mask');
+        
+        mainContainer.classList.add('ready');
+        // 给一点缓冲时间确保DOM渲染完成，再隐藏遮罩
+        setTimeout(() => {
+            loadingMask.classList.add('hidden');
+        }, 100);
+
+        document.addEventListener("visibilitychange", () => { 
+            if (document.visibilityState === 'visible') { 
+                refreshUI(); 
+                updateCountdown(); 
+            } 
+        });
     }
 
     function refreshUI() {
@@ -248,7 +319,10 @@
             } catch (e) { alert("❌ 解析失败，请检查代码是否完整。"); } 
         } 
     }
-    window.onload = init;
+
+    // 核心修改：将 window.onload 改为 DOMContentLoaded，
+    // 确保 DOM 解析完成后立即执行，不等待图片等慢资源
+    document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>

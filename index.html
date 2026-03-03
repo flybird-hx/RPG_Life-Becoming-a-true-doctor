@@ -279,8 +279,8 @@
     }
 
     function submitDay() {
-        let dailyXP = 0, coreDone = true, sideCount = 0;
-        document.querySelectorAll('.c-check').forEach(i => { if(i.checked) dailyXP += parseInt(i.dataset.pts); else coreDone = false; });
+        let dailyXP = 0, coreDone = false, sideCount = 0;
+        document.querySelectorAll('.c-check').forEach(i => { if(i.checked) { dailyXP += parseInt(i.dataset.pts); coreDone = true; } });
         document.querySelectorAll('.s-check').forEach(i => { if(i.checked) { dailyXP += parseInt(i.dataset.pts); sideCount++; } });
         if (coreDone && sideCount >= 3) {
             state.xp += dailyXP; state.streak++; state.missedDays = 0;

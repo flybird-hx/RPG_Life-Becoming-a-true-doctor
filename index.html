@@ -146,7 +146,20 @@
         .reward-header { font-size: 0.95rem; color: var(--success); font-weight: bold; margin-bottom: 12px; }
         .reward-item { display: flex; justify-content: space-between; align-items: center; font-size: 1rem; margin-bottom: 10px; color: #666; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.02); }
         .reward-item.unlocked { color: var(--gold); background: rgba(255,215,0,0.05); font-weight: bold; }
-        .reward-count { background: var(--gold); color: #000; padding: 2px 10px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; }
+        /* 新增：奖励按钮样式 */
+        .reward-btn { 
+            background: var(--gold); color: #000; 
+            padding: 4px 12px; border-radius: 10px; 
+            font-size: 0.85rem; font-weight: bold; 
+            border: none; cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .reward-btn:hover { opacity: 0.8; }
+        .reward-btn:disabled { 
+            background: #666; cursor: not-allowed;
+            color: #ccc;
+        }
+        .reward-desc { font-size: 0.85rem; color: #888; margin-left: 5px; }
 
         .cd-zone { margin-top: 15px; background: rgba(255, 71, 87, 0.12); border: 1px solid rgba(255, 71, 87, 0.3); border-radius: 15px; padding: 15px; text-align: center; }
         .ms-card { margin-top: 10px; background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); border-radius: 15px; padding: 15px; text-align: center; }
@@ -254,9 +267,37 @@
         { xp: 8400, name: "1000元购物金", type: 'cycle', icon: "🧧" }
     ];
 
+    // 新增：奖励使用次数存储，数据持久化
     let state = JSON.parse(localStorage.getItem('drainage_rpg_v39')) || { 
-        xp: 0, streak: 0, maxStreak: 0, coins: 0, lastDate: "", missedDays: 0 
+        xp: 0, streak: 0, maxStreak: 0, coins: 0, lastDate: "", missedDays: 0, rewardUses: {}
     };
+
+    // 新增：奖励消耗函数
+    function useReward(index) {
+        const reward = rewardSettings[index];
+        // 总获得次数
+        const totalCount = Math.floor(state.xp / reward.xp);
+        // 已消耗次数
+        const usedCount = state.rewardUses[index] || 0;
+        // 剩余次数
+        const remaining = totalCount - usedCount;
+
+        if(remaining <= 0){
+            alert("❌ 该奖励已无可用次数！");
+            return;
+        }
+
+        // 弹出确认框
+        if(confirm(`确定要消耗 1 次【${reward.name}】奖励吗？\n剩余次数：${remaining - 1}`)){
+            // 更新消耗次数
+            state.rewardUses[index] = usedCount + 1;
+            // 保存数据
+            localStorage.setItem('drainage_rpg_v39', JSON.stringify(state));
+            // 重新渲染奖励列表
+            renderRewards();
+            alert(`✅ 已成功使用 1 次【${reward.name}】！`);
+        }
+    }
 
     // 新增：更新日期显示
     function updateDate() {
@@ -313,13 +354,28 @@
         }
     }
 
+    // 修改：渲染奖励列表（集成按钮功能）
     function renderRewards() {
         const list = document.getElementById('rewardList');
-        list.innerHTML = rewardSettings.map(r => {
-            const count = Math.floor(state.xp / r.xp);
-            const isUnlocked = count > 0;
-            const statusText = isUnlocked ? `<span class="reward-count">已获 ${count} 次</span>` : `<small>每 ${r.xp} XP</small>`;
-            return `<div class="reward-item ${isUnlocked ? 'unlocked' : ''}"><span>${r.icon} ${r.name}</span>${statusText}</div>`;
+        list.innerHTML = rewardSettings.map((r, index) => {
+            const totalCount = Math.floor(state.xp / r.xp);
+            const usedCount = state.rewardUses[index] || 0;
+            const remaining = totalCount - usedCount;
+            const isUnlocked = totalCount > 0;
+            
+            let btnHtml = '';
+            if(isUnlocked){
+                // 可点击按钮，显示剩余次数
+                btnHtml = `<button class="reward-btn" onclick="useReward(${index})" ${remaining <= 0 ? 'disabled' : ''}>
+                    剩余 ${remaining} 次
+                </button>`;
+            } else {
+                // 未解锁，显示解锁条件
+                btnHtml = `<small class="reward-desc">每 ${r.xp} XP 解锁</small>`;
+            }
+            return `<div class="reward-item ${isUnlocked ? 'unlocked' : ''}">
+                <span>${r.icon} ${r.name}</span>${btnHtml}
+            </div>`;
         }).join('');
     }
 
@@ -371,7 +427,7 @@
             try { 
                 state = JSON.parse(decodeURIComponent(escape(atob(code)))); 
                 localStorage.setItem('drainage_rpg_v39', JSON.stringify(state)); 
-                location.reload(); 
+                location.reload();
             } catch (e) { alert("❌ 解析失败，请检查代码是否完整。"); } 
         } 
     }

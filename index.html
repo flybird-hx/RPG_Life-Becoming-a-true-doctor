@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>人生转轨战略系统 2026+</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <style>
   :root {
     --bg: #d9e8f5;
@@ -171,14 +172,19 @@
   /* 打卡系统 */
   .check-item { display: flex; align-items: center; gap: 14px; padding: 18px; background: #e8f0f7; border-radius: 14px; cursor: pointer; transition: 0.2s; margin-bottom: 12px; border: 1px solid #b5cfe3; min-height: 78px; }
   .check-item:hover { transform: translateY(-1px); border: 1px solid rgba(255,255,255,0.12); }
-  .check-item.checked { border-color: var(--green); background: #effaf3; }
+  .check-item.checked { 
+    border-color: var(--green); 
+    background: #effaf3; 
+    pointer-events: none; /* 提交后锁定交互 */
+    opacity: 0.8;
+  }
   .check-box { width: 24px; height: 24px; border: 2px solid var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
   .check-item.checked .check-box { background: var(--green); border-color: var(--green); }
   .check-content { flex: 1; font-size: 19px; font-weight: 700; font-family: 'Segoe UI', 'Noto Sans SC', sans-serif; color: #334f6b; }
   .check-pts { font-family: 'JetBrains Mono'; font-size: 13px; color: var(--text3); margin-top: 4px; }
 
-  .score-display { text-align: center; padding: 34px; margin-bottom: 10px; background: #dce8f5; border-radius: 16px; border: 1px solid #b5cfe3; }
-  .score-num { font-size: 82px; font-family: 'JetBrains Mono'; color: var(--text3); line-height: 1; }
+  .score-display { text-align: center; padding: 34px; margin-bottom: 10px; background: #dce8f5; border-radius: 16px; border: 1px solid #b5cfe3; transition: all 0.3s; }
+  .score-num { font-size: 82px; font-family: 'JetBrains Mono'; color: var(--text3); line-height: 1; transition: color 0.3s; }
   .score-msg { font-size: 18px; color: var(--text2); margin-top: 12px; font-weight: 600; }
 
   /* 警示样式 */
@@ -187,8 +193,6 @@
 
   /* 通用 */
   .insight { background: #dce8f5; border-left: 3px solid var(--secondary); padding: 18px; margin-bottom: 20px; font-size: 17px; }
-  .btn-submit { width: 100%; padding: 20px; background: linear-gradient(45deg, #7bc5ff, #b8a2ff); border: none; border-radius: 14px; color: #fff; font-weight: 800; font-size: 22px; cursor: pointer; margin-top: 24px; box-shadow: 0 10px 18px rgba(135, 180, 235, 0.35); font-family: 'Segoe UI', 'Noto Sans SC', sans-serif; }
-  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
   .btn-reward { width: 100%; margin-top: 10px; padding: 10px; border-radius: 10px; border: 1px solid #f0d498; background: #fff9ea; color: #ac8127; cursor: pointer; font-weight: bold; }
   .btn-reward:disabled { opacity: 0.4; cursor: not-allowed; }
 
@@ -199,6 +203,7 @@
   .reward-desc { font-size: 11px; color: var(--text3); }
   .reward-btn-mini { border: 1px solid #f0d498; background: #fff7e0; color: #a87a1d; border-radius: 8px; padding: 4px 8px; font-size: 11px; cursor: pointer; }
   .reward-btn-mini:disabled { opacity: 0.45; cursor: not-allowed; }
+  
   .backup-zone { margin-top: 14px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
   .btn-small {
     border-radius: 10px;
@@ -259,6 +264,25 @@
   .content-wrapper .route-time,
   .content-wrapper .section-tag {
     font-size: 12px;
+  }
+  
+  /* 抽奖券弹窗样式 */
+  #lotteryPopup {
+    display: none;
+    border: 2px dashed var(--gold);
+    background: #fffbf0;
+    text-align: center;
+    padding: 24px;
+    margin-top: 20px;
+    border-radius: 16px;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(240, 191, 94, 0.2);
+    animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  #lotteryPopup:hover { background: #fff4d6; }
+  @keyframes bounceIn {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
   }
 </style>
 </head>
@@ -514,7 +538,17 @@
           </div>
         </div>
 
-        <button class="btn-submit" id="submitDayBtn" onclick="finalizeDay()">⚡ 提交战果并锁定经验值</button>
+        <div id="lotteryPopup" onclick="triggerPopupLottery()">
+          <div style="font-size: 32px; margin-bottom: 8px;">🎟️</div>
+          <div style="font-weight: 800; font-size: 18px; color: #a87a1d;">恭喜达成 95 分满分成就！</div>
+          <div style="font-size: 14px; color: #bca061; margin-top: 4px;">点击此处立即进行满分专属抽奖</div>
+        </div>
+
+        <div class="card" style="margin-top: 24px;">
+          <div class="section-tag">长期执行数据监控 (累计完成次数)</div>
+          <div id="progressChart" style="width: 100%; height: 350px;"></div>
+        </div>
+
       </div>
 
       <div id="tab-warnings" class="section">
@@ -561,7 +595,7 @@
 </div>
 
 <script>
-  // 核心状态管理
+  // 核心状态管理 (新增 taskHistory 用于图表统计)
   let state = {
     xp: 0,
     streak: 0,
@@ -573,14 +607,18 @@
     chestClaimedDate: "",
     checkedTasks: [],
     checkedDate: "",
-    history: []
+    history: [],
+    taskHistory: {}
   };
+  
   const rewardSettings = [
     { id: "drink", cost: 260, name: "一杯喜欢的饮品", icon: "🧋" },
     { id: "walk", cost: 520, name: "半天轻松散步", icon: "🌤️" },
     { id: "meal", cost: 980, name: "一顿治愈美食", icon: "🍜" },
     { id: "gift", cost: 1680, name: "一件小礼物", icon: "🎁", needGems: 1 }
   ];
+  
+  // 抽奖概率池保持原设定
   const lotteryPool = [
     { name: "小金币包", icon: "🪙", chance: 0.38, apply: () => { state.coins += 60; return "金币 +60"; } },
     { name: "中金币包", icon: "💰", chance: 0.26, apply: () => { state.coins += 120; return "金币 +120"; } },
@@ -588,15 +626,10 @@
     { name: "双倍金币", icon: "✨", chance: 0.12, apply: () => { state.coins += 200; return "金币 +200"; } },
     { name: "幸运返券", icon: "🎟️", chance: 0.08, apply: () => { state.tickets += 1; return "抽奖券返还 +1"; } }
   ];
+  
   const watermarkWords = [
-    "感官唤醒",
-    "自建结构",
-    "打破钝化状态",
-    "恢复主动性",
-    "无目的探索",
-    "感受细节",
-    "愿意尝试",
-    "迷茫中保持行动"
+    "感官唤醒", "自建结构", "打破钝化状态", "恢复主动性", 
+    "无目的探索", "感受细节", "愿意尝试", "迷茫中保持行动"
   ];
   let watermarkResizeTimer = null;
 
@@ -606,9 +639,6 @@
 
   function saveCheckedTasks() {
     state.checkedDate = getTodayDateKey();
-    state.checkedTasks = Array.from(document.querySelectorAll('.check-item.checked'))
-      .map(el => el.dataset.taskId)
-      .filter(Boolean);
     localStorage.setItem('life_pivot_state', JSON.stringify(state));
   }
 
@@ -617,78 +647,33 @@
     if (state.checkedDate !== today || !Array.isArray(state.checkedTasks)) {
       state.checkedDate = today;
       state.checkedTasks = [];
+      state.todayScore = 0;
       saveCheckedTasks();
       return;
     }
 
     const selectedIds = state.checkedTasks || [];
+    let restoredScore = 0;
     document.querySelectorAll('.check-item').forEach(el => {
       if (selectedIds.includes(el.dataset.taskId)) {
         el.classList.add('checked');
+        restoredScore += Number(el.dataset.points || 0);
       } else {
         el.classList.remove('checked');
       }
     });
-    calculateScore();
+    state.todayScore = restoredScore;
+    updateScoreVisuals();
   }
 
-  function calculateScoreFromTasks(taskIds) {
-    let score = 0;
-    document.querySelectorAll('.check-item').forEach(el => {
-      if (taskIds.includes(el.dataset.taskId)) {
-        score += Number(el.dataset.points || 0);
-      }
-    });
-    return score;
-  }
-
-  function autoSubmitPreviousDay() {
+  function resetDayIfNeed() {
     const today = getTodayDateKey();
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayStr = yesterday.toDateString();
-    
-    // 检测前一天是否有未提交的勾选内容
-    if (state.checkedDate === yesterdayStr && 
-        state.lastDate !== today && 
-        Array.isArray(state.checkedTasks) && 
-        state.checkedTasks.length > 0) {
-      
-      const previousScore = calculateScoreFromTasks(state.checkedTasks);
-      
-      if (previousScore >= 60) {
-        const multiplier = getStreakMultiplier(state.streak + 1);
-        const gainedXP = Math.floor(previousScore * multiplier);
-        const gainedCoins = Math.floor(previousScore * 0.25 * multiplier);
-        
-        state.xp += gainedXP;
-        state.coins += gainedCoins;
-        if (previousScore >= 120) state.tickets += 1;
-        
-        // 连胜逻辑
-        if (state.lastDate === yesterdayStr) {
-          state.streak++;
-        } else {
-          state.streak = 1;
-        }
-        
-        // 只有真正提交了前一天的数据，才将 lastDate 设为今天
-        state.lastDate = today;
-        
-        const milestoneReward = checkAndApplyMilestoneReward(state.streak);
-        
-        alert(`🔄 检测到前一天未提交的任务，已自动计算！\nEXP +${gainedXP}\n金币 +${gainedCoins}${previousScore >= 120 ? "\n抽奖券 +1" : ""}${milestoneReward}`);
-      }
-    }
-    
-    // 如果今天是新的一天，重置今天的 checkedTasks（但不碰 lastDate）
     if (state.checkedDate !== today) {
       state.checkedDate = today;
       state.checkedTasks = [];
       state.todayScore = 0;
+      localStorage.setItem('life_pivot_state', JSON.stringify(state));
     }
-    
-    localStorage.setItem('life_pivot_state', JSON.stringify(state));
   }
 
   // 初始化
@@ -696,7 +681,10 @@
     const saved = localStorage.getItem('life_pivot_state');
     if (saved) state = { ...state, ...JSON.parse(saved) };
     
-    autoSubmitPreviousDay();
+    // 兼容旧版存档
+    if (!state.taskHistory) state.taskHistory = {};
+    
+    resetDayIfNeed();
     loadTabs();
     restoreCheckedTasks();
     updateSidebar();
@@ -705,6 +693,7 @@
     renderRewards();
     renderWatermarks();
     bindWatermarkResize();
+    renderChart();
 
     // 加载动画
     setTimeout(() => {
@@ -717,11 +706,8 @@
     const layer = document.getElementById('watermark-layer');
     if (!layer) return;
     layer.innerHTML = "";
-
     const width = window.innerWidth;
     const height = window.innerHeight;
-    
-    // 使用网格布局避免重叠
     const gridCols = Math.ceil(width / 280);
     const gridRows = Math.ceil(height / 280);
     const cellWidth = width / gridCols;
@@ -729,19 +715,16 @@
 
     for (let row = 0; row < gridRows; row++) {
       for (let col = 0; col < gridCols; col++) {
-        // 在每个网格单元内随机放置，添加偏移确保不会越界
         const baseX = col * cellWidth;
         const baseY = row * cellHeight;
         const x = baseX + Math.random() * (cellWidth * 0.8);
         const y = baseY + Math.random() * (cellHeight * 0.8);
-        
         const item = document.createElement('div');
         item.className = 'watermark-item';
         const word = watermarkWords[Math.floor(Math.random() * watermarkWords.length)];
         const rotate = -28 + Math.random() * 56;
         const size = 18 + Math.random() * 10;
         const alpha = 0.08 + Math.random() * 0.08;
-
         item.textContent = word;
         item.style.left = `${x}px`;
         item.style.top = `${y}px`;
@@ -756,91 +739,139 @@
   function bindWatermarkResize() {
     window.addEventListener('resize', () => {
       clearTimeout(watermarkResizeTimer);
-      watermarkResizeTimer = setTimeout(() => {
-        renderWatermarks();
-      }, 220);
+      watermarkResizeTimer = setTimeout(() => { renderWatermarks(); }, 220);
     });
   }
 
-  // 标签切换逻辑
   function loadTabs() {
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const tab = btn.dataset.tab;
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        
         btn.classList.add('active');
         document.getElementById(`tab-${tab}`).classList.add('active');
+        if (tab === 'checkin') renderChart(); // 重新渲染图表适应宽度
       });
     });
   }
 
-  // 打卡逻辑
+  // 任务勾选(核心业务逻辑：即时结算与静默判定)
   function toggleTask(el) {
+    if (el.classList.contains('checked')) return; // 已锁定不可重复勾选
+
     const today = getTodayDateKey();
-    if (state.lastDate === today) {
-      alert("今日数据已提交锁定，无法继续修改。");
-      return;
-    }
-    
-    const currentDate = getTodayDateKey();
-    if (state.checkedDate !== currentDate) {
+    if (state.checkedDate !== today) {
       state.checkedTasks = [];
-      state.checkedDate = currentDate;
+      state.checkedDate = today;
+      state.todayScore = 0;
     }
-    el.classList.toggle('checked');
+
+    const taskId = el.dataset.taskId;
+    const points = Number(el.dataset.points || 0);
+
+    // 执行状态锁定
+    el.classList.add('checked');
+    state.checkedTasks.push(taskId);
+
+    // 记录历史数据用于图表
+    state.taskHistory[today] = state.checkedTasks;
+
+    let oldScore = state.todayScore;
+    state.todayScore += points;
+
+    let gainedXP = 0;
+    let gainedCoins = 0;
+    let multiplier = 1.0;
+
+    // 判定逻辑: 达到 60 分阈值（由未达标变为达标）
+    if (oldScore < 60 && state.todayScore >= 60) {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      
+      if (state.lastDate === yesterday.toDateString()) {
+        state.streak++;
+      } else if (state.lastDate !== today) {
+        state.streak = 1;
+      }
+      state.lastDate = today;
+      multiplier = getStreakMultiplier(state.streak);
+
+      // 对本次得分应用倍率，并补发此前得分的倍率差额
+      gainedXP = Math.floor(points * multiplier) + Math.floor(oldScore * (multiplier - 1));
+      gainedCoins = Math.floor(points * 0.25 * multiplier) + Math.floor(oldScore * 0.25 * (multiplier - 1));
+
+      const milestoneText = checkAndApplyMilestoneReward(state.streak);
+      alert(`🎯 核心目标达成！\n当前连击：${state.streak}天，触发 ${multiplier}x 收益倍率。\n已为您补发差额经验与金币！${milestoneText}`);
+    } 
+    // 判定逻辑: 已达到 60 分之后继续勾选
+    else if (state.todayScore >= 60) {
+      multiplier = getStreakMultiplier(state.streak);
+      gainedXP = Math.floor(points * multiplier);
+      gainedCoins = Math.floor(points * 0.25 * multiplier);
+    } 
+    // 判定逻辑: 未达 60 分
+    else {
+      gainedXP = points;
+      gainedCoins = Math.floor(points * 0.25);
+    }
+
+    state.xp += gainedXP;
+    state.coins += gainedCoins;
+
+    // 判定逻辑: 达到 95 分阈值二（满分线）
+    if (oldScore < 95 && state.todayScore >= 95) {
+      document.getElementById('lotteryPopup').style.display = 'block';
+    }
+
     saveCheckedTasks();
-    calculateScore();
+    updateSidebar();
+    updateScoreVisuals();
+    renderChart();
   }
 
-  function calculateScore() {
-    const checkedItems = Array.from(document.querySelectorAll('.check-item.checked'));
-    const score = checkedItems.reduce((acc, el) => acc + Number(el.dataset.points || 0), 0);
-
+  function updateScoreVisuals() {
     const display = document.getElementById('currentScore');
-    display.innerText = score;
-    state.todayScore = score;
-
     const msg = document.getElementById('scoreMsg');
-    if (score >= 80) { display.style.color = 'var(--green)'; msg.innerText = "成功日！接近满分可获得抽奖券。"; }
-    else if (score >= 60) { display.style.color = 'var(--accent)'; msg.innerText = "核心已完成，再加两项成长任务即可达标。"; }
-    else { display.style.color = 'var(--text3)'; msg.innerText = "状态差时请降载运行，至少完成核心 A。"; }
+    const score = state.todayScore || 0;
+
+    display.innerText = score;
+
+    if (score >= 95) { 
+      display.style.color = 'var(--gold)'; 
+      msg.innerText = "满分成就达成！请点击下方抽奖券。"; 
+    }
+    else if (score >= 60) { 
+      display.style.color = 'var(--green)'; 
+      msg.innerText = "核心已达成（连击生效中），继续推进获得高倍奖励。"; 
+    }
+    else { 
+      display.style.color = 'var(--text3)'; 
+      msg.innerText = "任务数据实时收集中，请优先完成核心A。"; 
+    }
 
     updateTodayProgress();
     updateRightBalancePanel();
   }
 
-  function finalizeDay() {
-    const today = new Date().toDateString();
-    if (state.lastDate === today) return;
+  function triggerPopupLottery() {
+    const popup = document.getElementById('lotteryPopup');
+    popup.style.display = 'none';
 
-    if (state.todayScore < 60) {
-      alert("请至少完成核心任务 (A层) 再提交。");
-      return;
+    const roll = Math.random();
+    let cumulative = 0;
+    let result = lotteryPool[0];
+    for (const item of lotteryPool) {
+      cumulative += item.chance;
+      if (roll <= cumulative) {
+        result = item;
+        break;
+      }
     }
-
-    const multiplier = getStreakMultiplier(state.streak + 1);
-    const gainedXP = Math.floor(state.todayScore * multiplier);
-    const gainedCoins = Math.floor(state.todayScore * 0.25 * multiplier);
-    state.xp += gainedXP;
-    state.coins += gainedCoins;
-    if (state.todayScore >= 120) state.tickets += 1;
-    
-    // 连胜逻辑
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    if (state.lastDate === yesterday.toDateString()) {
-      state.streak++;
-    } else {
-      state.streak = 1;
-    }
-
-    state.lastDate = today;
-    const milestoneReward = checkAndApplyMilestoneReward(state.streak);
+    const rewardText = result.apply();
     localStorage.setItem('life_pivot_state', JSON.stringify(state));
-    alert(`结算成功！\nEXP +${gainedXP}\n金币 +${gainedCoins}${state.todayScore >= 120 ? "\n抽奖券 +1 (近满分奖励)" : ""}${milestoneReward}`);
-    location.reload();
+    updateSidebar();
+    alert(`🎉 满分专属抽奖结果：\n【${result.icon} ${result.name}】\n获得：${rewardText}`);
   }
 
   function claimDailyChest() {
@@ -849,7 +880,7 @@
       alert("今日礼盒已领取。");
       return;
     }
-    const completed = document.querySelectorAll('.check-item.checked').length;
+    const completed = state.checkedTasks.length;
     if (completed < 5) {
       alert("至少完成 5 项任务才可领取今日礼盒。");
       return;
@@ -862,7 +893,6 @@
     alert(`暖心礼盒开启成功！获得：金币 +30${gemDropped ? "，宝石 +1" : "（本次未掉落宝石）"}`);
     updateSidebar();
     updateTodayProgress();
-    updateRewardTrack();
     renderRewards();
   }
 
@@ -877,14 +907,6 @@
     const titles = ["迷雾探索者", "路径建设者", "秩序掌控者", "自由迁徙者"];
     document.getElementById('playerLevel').innerText = `LV.${level} ${titles[Math.min(level-1, 3)]}`;
 
-    if (state.lastDate === new Date().toDateString()) {
-      const btn = document.getElementById('submitDayBtn');
-      btn.disabled = true;
-      btn.innerText = "今日数据已锁定";
-    }
-
-    restoreCheckedTasks();
-    updateRewardTrack();
     renderRewards();
     updateRightBalancePanel();
     updateLotteryButton();
@@ -902,10 +924,8 @@
     const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
     const dayText = weekDays[now.getDay()];
     const dateText = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-    const dayEl = document.getElementById('todayDay');
-    const dateEl = document.getElementById('todayDate');
-    if (dayEl) dayEl.innerText = dayText;
-    if (dateEl) dateEl.innerText = dateText;
+    document.getElementById('todayDay').innerText = dayText;
+    document.getElementById('todayDate').innerText = dateText;
   }
 
   function getStreakMultiplier(streak) {
@@ -916,7 +936,7 @@
 
   function updateTodayProgress() {
     const total = document.querySelectorAll('.check-item').length;
-    const done = document.querySelectorAll('.check-item.checked').length;
+    const done = state.checkedTasks.length;
     const ratio = total ? (done / total) * 100 : 0;
     document.getElementById('todayProgressFill').style.width = `${ratio}%`;
     document.getElementById('todayProgressText').innerText = `${done}/${total} 任务完成`;
@@ -939,41 +959,37 @@
     const mirrorHint = document.getElementById('mirrorHint');
     if (!mirrorScore || !mirrorSummary || !mirrorBoost || !mirrorHint) return;
 
-    const done = document.querySelectorAll('.check-item.checked').length;
+    const done = state.checkedTasks.length;
     const total = document.querySelectorAll('.check-item').length;
-    const multiplier = getStreakMultiplier(state.lastDate === new Date().toDateString() ? state.streak : state.streak + 1);
+    const multiplier = getStreakMultiplier(state.streak);
 
     mirrorScore.innerText = `${state.todayScore || 0} 分`;
-    mirrorBoost.innerText = `${multiplier.toFixed(1)}x`;
+    mirrorBoost.innerText = `${state.todayScore >= 60 ? multiplier.toFixed(1) : "1.0"}x`;
 
-    if ((state.todayScore || 0) >= 80) {
-      mirrorSummary.innerText = `完成度 ${done}/${total}，今天状态非常稳。`;
-      mirrorHint.innerText = "继续保持，明天可直接冲高倍奖励。";
+    if ((state.todayScore || 0) >= 95) {
+      mirrorSummary.innerText = `完成度 ${done}/${total}，表现堪称完美。`;
+      mirrorHint.innerText = "记得抽取你的满分奖励！";
     } else if ((state.todayScore || 0) >= 60) {
-      mirrorSummary.innerText = `完成度 ${done}/${total}，核心目标已达成。`;
-      mirrorHint.innerText = "再补 1~2 项小任务，今天会更完整。";
+      mirrorSummary.innerText = `完成度 ${done}/${total}，核心目标已安全着陆。`;
+      mirrorHint.innerText = "当前勾选任务可即刻获得连击加成。";
     } else {
-      mirrorSummary.innerText = `完成度 ${done}/${total}，先把核心任务做完。`;
-      mirrorHint.innerText = "每完成一步，都会累计到你的长期奖励池。";
+      mirrorSummary.innerText = `完成度 ${done}/${total}，优先攻克核心防线。`;
+      mirrorHint.innerText = "达到 60 分即可触发连击并补发加成。";
     }
-  }
-
-  function updateRewardTrack() {
-    // 保留函数入口，避免调用链断裂
   }
 
   function checkAndApplyMilestoneReward(streak) {
     if (streak === 3) {
       state.coins += 50;
-      return "\n里程碑奖励：连击3日，金币 +50";
+      return "\n✨里程碑：连击3日，额外金币 +50";
     }
     if (streak === 7) {
       state.gems += 1;
-      return "\n里程碑奖励：连击7日，宝石 +1";
+      return "\n💎里程碑：连击7日，额外宝石 +1";
     }
     if (streak === 15) {
       state.tickets += 2;
-      return "\n里程碑奖励：连击15日，抽奖券 +2";
+      return "\n🎟️里程碑：连击15日，额外抽奖券 +2";
     }
     return "";
   }
@@ -981,14 +997,7 @@
   function useReward(index) {
     const reward = rewardSettings[index];
     const gemNeed = reward.needGems || 0;
-    if (state.coins < reward.cost) {
-      alert(`金币不足。\n需要 ${reward.cost} 金币，当前仅有 ${state.coins}。`);
-      return;
-    }
-    if (state.gems < gemNeed) {
-      alert(`宝石不足。\n该奖励需要 ${gemNeed} 宝石，当前仅有 ${state.gems}。`);
-      return;
-    }
+    if (state.coins < reward.cost || state.gems < gemNeed) return;
 
     const costLabel = gemNeed > 0 ? `${reward.cost} 金币 + ${gemNeed} 宝石` : `${reward.cost} 金币`;
     if (confirm(`确认兑换【${reward.name}】吗？\n将消耗：${costLabel}`)) {
@@ -997,7 +1006,6 @@
       state.history[index] = (state.history[index] || 0) + 1;
       localStorage.setItem('life_pivot_state', JSON.stringify(state));
       updateSidebar();
-      renderRewards();
       alert(`兑换成功：${reward.icon} ${reward.name}`);
     }
   }
@@ -1034,12 +1042,8 @@
   }
 
   function drawWithTicket() {
-    if (state.tickets < 1) {
-      alert("抽奖券不足，无法抽奖。");
-      return;
-    }
+    if (state.tickets < 1) return;
     state.tickets -= 1;
-
     const roll = Math.random();
     let cumulative = 0;
     let result = lotteryPool[0];
@@ -1056,6 +1060,67 @@
     alert(`抽奖结果：${result.icon} ${result.name}\n获得：${rewardText}`);
   }
 
+  // 图表渲染逻辑
+  function renderChart() {
+    if (!window.echarts || !document.getElementById('progressChart')) return;
+    const chartDom = document.getElementById('progressChart');
+    let myChart = echarts.getInstanceByDom(chartDom);
+    if (!myChart) { myChart = echarts.init(chartDom); }
+
+    const taskMap = {
+      'task-core': '论文写作',
+      'task-english': '英语练习',
+      'task-japanese': '日语学习',
+      'task-job': '求职推进',
+      'task-tech': '技术进阶',
+      'task-walk': '运动锻炼',
+      'task-photo': '摄影/整理'
+    };
+
+    const dates = Object.keys(state.taskHistory).sort((a,b) => new Date(a) - new Date(b));
+    const seriesData = {};
+    const cumulativeCounts = {};
+    Object.keys(taskMap).forEach(key => {
+      seriesData[key] = [];
+      cumulativeCounts[key] = 0;
+    });
+
+    const formattedDates = dates.map(d => {
+      const dt = new Date(d);
+      return `${dt.getMonth()+1}-${dt.getDate()}`;
+    });
+
+    dates.forEach(date => {
+      const completedIds = state.taskHistory[date] || [];
+      Object.keys(taskMap).forEach(taskId => {
+        if (completedIds.includes(taskId)) {
+          cumulativeCounts[taskId]++;
+        }
+        seriesData[taskId].push(cumulativeCounts[taskId]);
+      });
+    });
+
+    const series = Object.keys(taskMap).map(taskId => ({
+      name: taskMap[taskId],
+      type: 'line',
+      step: 'end',
+      symbolSize: 6,
+      data: seriesData[taskId]
+    }));
+
+    const option = {
+      tooltip: { trigger: 'axis' },
+      legend: { data: Object.values(taskMap), type: 'scroll', bottom: 0 },
+      grid: { left: '3%', right: '4%', bottom: '15%', top: '5%', containLabel: true },
+      xAxis: { type: 'category', boundaryGap: false, data: formattedDates },
+      yAxis: { type: 'value', minInterval: 1 },
+      series: series
+    };
+
+    myChart.setOption(option);
+    window.addEventListener('resize', () => myChart.resize());
+  }
+
   function exportSave() {
     try {
       const saveText = btoa(unescape(encodeURIComponent(JSON.stringify(state))));
@@ -1064,9 +1129,7 @@
       }).catch(() => {
         prompt("复制下面的备份代码：", saveText);
       });
-    } catch (error) {
-      alert("导出失败，请稍后再试。");
-    }
+    } catch (error) { alert("导出失败，请稍后再试。"); }
   }
 
   function importSave() {
@@ -1078,18 +1141,14 @@
       localStorage.setItem('life_pivot_state', JSON.stringify(state));
       alert("导入成功，页面将刷新。");
       location.reload();
-    } catch (error) {
-      alert("导入失败，请检查备份代码是否完整。");
-    }
+    } catch (error) { alert("导入失败，请检查备份代码是否完整。"); }
   }
 
   function resetPageData() {
     const confirmed = confirm("确定要重置页面吗？\n我会先自动导出一份备份码。");
     if (!confirmed) return;
-
-    let saveText = "";
     try {
-      saveText = btoa(unescape(encodeURIComponent(JSON.stringify(state))));
+      const saveText = btoa(unescape(encodeURIComponent(JSON.stringify(state))));
       navigator.clipboard.writeText(saveText).then(() => {
         alert("已自动备份并复制到剪贴板。请先粘贴保存后再继续重置。");
       }).catch(() => {
@@ -1099,10 +1158,7 @@
       alert("备份生成失败，已取消重置。");
       return;
     }
-
-    const secondConfirm = confirm("请确认你已保存备份码。\n是否继续清空全部数据？");
-    if (!secondConfirm) return;
-
+    if (!confirm("请确认你已保存备份码。\n是否继续清空全部数据？")) return;
     localStorage.removeItem('life_pivot_state');
     alert("已重置为初始状态，页面即将刷新。");
     location.reload();

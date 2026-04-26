@@ -474,7 +474,7 @@
         </div>
 
         <div class="section-tag">A层 · 权重最高 (60pts)</div>
-        <div class="check-item" data-points="60" data-layer="a" onclick="toggleTask(this)">
+        <div class="check-item" data-task-id="task-core" data-points="60" data-layer="a" onclick="toggleTask(this)">
           <div class="check-box"></div>
           <div class="check-content">
             <div>论文写作 4 小时</div>
@@ -484,19 +484,19 @@
 
         <div class="section-tag">B层 · 均衡成长 (15pts/项)</div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-          <div class="check-item" data-points="15" data-layer="b" onclick="toggleTask(this)">
+          <div class="check-item" data-task-id="task-english" data-points="15" data-layer="b" onclick="toggleTask(this)">
             <div class="check-box"></div>
             <div class="check-content">英语练习</div>
           </div>
-          <div class="check-item" data-points="15" data-layer="b" onclick="toggleTask(this)">
+          <div class="check-item" data-task-id="task-japanese" data-points="15" data-layer="b" onclick="toggleTask(this)">
             <div class="check-box"></div>
             <div class="check-content">日语学习</div>
           </div>
-          <div class="check-item" data-points="15" data-layer="b" onclick="toggleTask(this)">
+          <div class="check-item" data-task-id="task-job" data-points="15" data-layer="b" onclick="toggleTask(this)">
             <div class="check-box"></div>
             <div class="check-content">求职推进</div>
           </div>
-          <div class="check-item" data-points="15" data-layer="b" onclick="toggleTask(this)">
+          <div class="check-item" data-task-id="task-tech" data-points="15" data-layer="b" onclick="toggleTask(this)">
             <div class="check-box"></div>
             <div class="check-content">技术进阶</div>
           </div>
@@ -504,11 +504,11 @@
 
         <div class="section-tag">C层 · 心理防线 (5pts/项)</div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-          <div class="check-item" data-points="5" data-layer="c" onclick="toggleTask(this)">
+          <div class="check-item" data-task-id="task-walk" data-points="5" data-layer="c" onclick="toggleTask(this)">
             <div class="check-box"></div>
             <div class="check-content">运动/步行</div>
           </div>
-          <div class="check-item" data-points="5" data-layer="c" onclick="toggleTask(this)">
+          <div class="check-item" data-task-id="task-photo" data-points="5" data-layer="c" onclick="toggleTask(this)">
             <div class="check-box"></div>
             <div class="check-content">摄影/整理</div>
           </div>
@@ -571,6 +571,8 @@
     gems: 0,
     tickets: 0,
     chestClaimedDate: "",
+    checkedTasks: [],
+    checkedDate: "",
     history: []
   };
   const rewardSettings = [
@@ -598,13 +600,101 @@
   ];
   let watermarkResizeTimer = null;
 
+  function getTodayDateKey() {
+    return new Date().toDateString();
+  }
+
+  function saveCheckedTasks() {
+    state.checkedDate = getTodayDateKey();
+    state.checkedTasks = Array.from(document.querySelectorAll('.check-item.checked'))
+      .map(el => el.dataset.taskId)
+      .filter(Boolean);
+    localStorage.setItem('life_pivot_state', JSON.stringify(state));
+  }
+
+  function restoreCheckedTasks() {
+    const today = getTodayDateKey();
+    if (state.checkedDate !== today || !Array.isArray(state.checkedTasks)) {
+      state.checkedDate = today;
+      state.checkedTasks = [];
+      saveCheckedTasks();
+      return;
+    }
+
+    const selectedIds = state.checkedTasks || [];
+    document.querySelectorAll('.check-item').forEach(el => {
+      if (selectedIds.includes(el.dataset.taskId)) {
+        el.classList.add('checked');
+      } else {
+        el.classList.remove('checked');
+      }
+    });
+    calculateScore();
+  }
+
+  function calculateScoreFromTasks(taskIds) {
+    let score = 0;
+    document.querySelectorAll('.check-item').forEach(el => {
+      if (taskIds.includes(el.dataset.taskId)) {
+        score += Number(el.dataset.points || 0);
+      }
+    });
+    return score;
+  }
+
+  function autoSubmitPreviousDay() {
+    const today = getTodayDateKey();
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toDateString();
+    
+    // 检测前一天是否有未提交的勾选内容
+    if (state.checkedDate === yesterdayStr && 
+        state.lastDate !== today && 
+        Array.isArray(state.checkedTasks) && 
+        state.checkedTasks.length > 0) {
+      
+      const previousScore = calculateScoreFromTasks(state.checkedTasks);
+      
+      if (previousScore >= 60) {
+        const multiplier = getStreakMultiplier(state.streak + 1);
+        const gainedXP = Math.floor(previousScore * multiplier);
+        const gainedCoins = Math.floor(previousScore * 0.25 * multiplier);
+        
+        state.xp += gainedXP;
+        state.coins += gainedCoins;
+        if (previousScore >= 120) state.tickets += 1;
+        
+        // 连胜逻辑
+        if (state.lastDate === yesterdayStr) {
+          state.streak++;
+        } else {
+          state.streak = 1;
+        }
+        
+        const milestoneReward = checkAndApplyMilestoneReward(state.streak);
+        
+        alert(`🔄 检测到前一天未提交的任务，已自动计算！\nEXP +${gainedXP}\n金币 +${gainedCoins}${previousScore >= 120 ? "\n抽奖券 +1" : ""}${milestoneReward}`);
+      }
+    }
+    
+    // 重置今天的数据
+    state.lastDate = today;
+    state.checkedDate = today;
+    state.checkedTasks = [];
+    state.todayScore = 0;
+    localStorage.setItem('life_pivot_state', JSON.stringify(state));
+  }
+
   // 初始化
   function init() {
     const saved = localStorage.getItem('life_pivot_state');
-    if (saved) state = JSON.parse(saved);
+    if (saved) state = { ...state, ...JSON.parse(saved) };
     
-    updateSidebar();
+    autoSubmitPreviousDay();
     loadTabs();
+    restoreCheckedTasks();
+    updateSidebar();
     updateThesisCountdown();
     updateDateUI();
     renderRewards();
@@ -683,8 +773,19 @@
 
   // 打卡逻辑
   function toggleTask(el) {
-    if (state.lastDate === new Date().toDateString()) return;
+    const today = getTodayDateKey();
+    if (state.lastDate === today) {
+      alert("今日数据已提交锁定，无法继续修改。");
+      return;
+    }
+    
+    const currentDate = getTodayDateKey();
+    if (state.checkedDate !== currentDate) {
+      state.checkedTasks = [];
+      state.checkedDate = currentDate;
+    }
     el.classList.toggle('checked');
+    saveCheckedTasks();
     calculateScore();
   }
 
@@ -777,7 +878,7 @@
       btn.innerText = "今日数据已锁定";
     }
 
-    updateTodayProgress();
+    restoreCheckedTasks();
     updateRewardTrack();
     renderRewards();
     updateRightBalancePanel();

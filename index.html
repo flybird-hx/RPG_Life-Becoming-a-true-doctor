@@ -672,17 +672,22 @@
           state.streak = 1;
         }
         
+        // 只有真正提交了前一天的数据，才将 lastDate 设为今天
+        state.lastDate = today;
+        
         const milestoneReward = checkAndApplyMilestoneReward(state.streak);
         
         alert(`🔄 检测到前一天未提交的任务，已自动计算！\nEXP +${gainedXP}\n金币 +${gainedCoins}${previousScore >= 120 ? "\n抽奖券 +1" : ""}${milestoneReward}`);
       }
     }
     
-    // 重置今天的数据
-    state.lastDate = today;
-    state.checkedDate = today;
-    state.checkedTasks = [];
-    state.todayScore = 0;
+    // 如果今天是新的一天，重置今天的 checkedTasks（但不碰 lastDate）
+    if (state.checkedDate !== today) {
+      state.checkedDate = today;
+      state.checkedTasks = [];
+      state.todayScore = 0;
+    }
+    
     localStorage.setItem('life_pivot_state', JSON.stringify(state));
   }
 
